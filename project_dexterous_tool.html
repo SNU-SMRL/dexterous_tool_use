@@ -591,8 +591,8 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
   <div class="footer__t">Language-Conditioned Dexterous Tool Use via GR00T N1.7</div>
   <div class="footer__s">Aerospace GNC &times; Robotics &mdash; Side Project Portfolio</div>
 </footer>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore-compat.js"></script>
 <script>
 // ===== SIDEBAR =====
 (function(){const e=document.querySelectorAll(".sidebar__link"),t=[];e.forEach(e=>{const n=e.getAttribute("href").substring(1),s=document.getElementById(n);s&&t.push({id:n,el:s,link:e})});function n(){const n=window.scrollY+120;let s=t[0];for(const e of t)e.el.offsetTop<=n&&(s=e);e.forEach(e=>e.classList.remove("active")),s&&s.link.classList.add("active")}window.addEventListener("scroll",n,{passive:!0}),n(),e.forEach(e=>{e.addEventListener("click",()=>{window.innerWidth<=768&&document.querySelector(".sidebar").classList.remove("open")})})})();
