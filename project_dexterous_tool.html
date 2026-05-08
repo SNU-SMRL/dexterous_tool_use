@@ -171,14 +171,28 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--c-clou
 .status-btn[data-val="in-progress"]{background:rgba(2,74,216,.08);color:var(--c-primary);border-color:var(--c-primary-soft)}
 .status-btn[data-val="done"]{background:#e6f4ea;color:#1a7f37;border-color:#c6efce}
 
-.ptl__note{margin-top:var(--sp-sm)}
-.ptl__note-toggle{font-size:12px;color:var(--c-primary);cursor:pointer;border:none;background:none;padding:0;font-weight:500;text-decoration:underline;text-underline-offset:2px}
-.ptl__note-toggle:hover{color:var(--c-primary-bright)}
-.ptl__textarea{width:100%;margin-top:var(--sp-xs);padding:var(--sp-sm);border:1px solid var(--c-fog);border-radius:var(--r-lg);font-family:inherit;font-size:13px;line-height:1.55;color:var(--c-ink);background:var(--c-cloud);resize:vertical;min-height:60px;outline:none;transition:border-color .15s}
-.ptl__textarea:focus{border-color:var(--c-primary)}
-.ptl__textarea::placeholder{color:var(--c-steel)}
-.ptl__saved{font-size:11px;color:var(--c-graphite);margin-left:var(--sp-sm);opacity:0;transition:opacity .3s}
-.ptl__saved.show{opacity:1}
+/* COMMENTS */
+.cmt-section{margin-top:var(--sp-sm)}
+.cmt-input-wrap{display:flex;gap:var(--sp-xs);align-items:center}
+.cmt-input{flex:1;padding:8px 12px;border:1px solid var(--c-fog);border-radius:var(--r-lg);font-family:inherit;font-size:13px;color:var(--c-ink);background:var(--c-cloud);outline:none;transition:border-color .15s}
+.cmt-input:focus{border-color:var(--c-primary);background:var(--c-canvas)}
+.cmt-input::placeholder{color:var(--c-steel)}
+.cmt-list{margin-top:var(--sp-xs)}
+.cmt{display:flex;align-items:flex-start;gap:var(--sp-xs);padding:6px 0;border-bottom:1px solid var(--c-cloud);font-size:13px;line-height:1.5}
+.cmt:last-child{border-bottom:none}
+.cmt__author{font-weight:600;color:var(--c-primary);white-space:nowrap;flex-shrink:0}
+.cmt__text{color:var(--c-charcoal);flex:1;word-break:break-word}
+.cmt__time{font-size:11px;color:var(--c-steel);white-space:nowrap;flex-shrink:0}
+.cmt__del{background:none;border:none;cursor:pointer;padding:2px;color:var(--c-steel);font-size:14px;line-height:1;flex-shrink:0;border-radius:3px;transition:all .15s}
+.cmt__del:hover{color:#b3262b;background:#fde8e8}
+.nickname-bar{position:fixed;bottom:0;left:var(--sidebar-w);right:0;background:var(--c-canvas);border-top:1px solid var(--c-fog);padding:8px var(--sp-xxl);display:flex;align-items:center;gap:var(--sp-sm);font-size:13px;z-index:997;box-shadow:0 -2px 8px rgba(0,0,0,.04)}
+.nickname-bar label{color:var(--c-graphite);font-weight:500}
+.nickname-bar input{padding:4px 10px;border:1px solid var(--c-fog);border-radius:var(--r-lg);font-family:inherit;font-size:13px;width:120px;outline:none}
+.nickname-bar input:focus{border-color:var(--c-primary)}
+.nickname-bar .admin-toggle{margin-left:auto;padding:4px 12px;border:1px solid var(--c-fog);border-radius:var(--r-lg);background:var(--c-cloud);font-size:12px;font-weight:500;cursor:pointer;color:var(--c-graphite);transition:all .15s}
+.nickname-bar .admin-toggle:hover{border-color:var(--c-primary-soft)}
+.nickname-bar .admin-toggle.active{background:var(--c-primary);color:var(--c-on-ink);border-color:var(--c-primary)}
+@media(max-width:768px){.nickname-bar{left:0;padding:8px var(--sp-md)}}
 
 .ptl__reset{display:inline-flex;align-items:center;gap:6px;margin-top:var(--sp-lg);padding:6px 14px;border-radius:var(--r-lg);font-size:12px;font-weight:500;border:1px solid var(--c-fog);background:var(--c-canvas);color:var(--c-graphite);cursor:pointer;transition:all .15s}
 .ptl__reset:hover{border-color:#fde8e8;background:#fde8e8;color:#b3262b}
@@ -202,7 +216,7 @@ tbody tr:last-child td{border-bottom:none}tbody tr:hover{background:var(--c-clou
 .pf strong{font-weight:600}
 
 /* FOOTER */
-.footer{background:var(--c-ink);color:var(--c-on-ink);padding:40px var(--sp-xxl);text-align:center;margin-left:var(--sidebar-w)}
+.footer{background:var(--c-ink);color:var(--c-on-ink);padding:40px var(--sp-xxl) 60px;text-align:center;margin-left:var(--sidebar-w)}
 .footer__t{font-size:16px;font-weight:500;margin-bottom:var(--sp-xs)}
 .footer__s{font-size:13px;color:var(--c-steel)}
 
@@ -382,7 +396,7 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
       </div>
       <div class="ptl__d">GR00T N1.7 weights, Isaac Lab dex hand asset, post-training 가능 여부.</div>
-      <div class="ptl__note"><button class="ptl__note-toggle" onclick="toggleNote(this)">+ 메모 추가</button><textarea class="ptl__textarea" style="display:none" placeholder="이번 주 메모를 남기세요..." oninput="saveNotes(this)"></textarea><span class="ptl__saved"></span></div>
+      <div class="cmt-section"><div class="cmt-input-wrap"><input type="text" class="cmt-input" placeholder="메모 입력 후 Enter..." onkeydown="if(event.key==='Enter')postComment(this)"></div><div class="cmt-list"></div></div>
     </div>
     <div class="ptl__i" data-id="w2" data-status="not-started">
       <div class="ptl__header">
@@ -390,7 +404,7 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
       </div>
       <div class="ptl__d">Dex hand + tool 에셋 로드, 시뮬레이션 환경 세팅.</div>
-      <div class="ptl__note"><button class="ptl__note-toggle" onclick="toggleNote(this)">+ 메모 추가</button><textarea class="ptl__textarea" style="display:none" placeholder="이번 주 메모를 남기세요..." oninput="saveNotes(this)"></textarea><span class="ptl__saved"></span></div>
+      <div class="cmt-section"><div class="cmt-input-wrap"><input type="text" class="cmt-input" placeholder="메모 입력 후 Enter..." onkeydown="if(event.key==='Enter')postComment(this)"></div><div class="cmt-list"></div></div>
     </div>
     <div class="ptl__i" data-id="w3" data-status="not-started">
       <div class="ptl__header">
@@ -398,7 +412,7 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
       </div>
       <div class="ptl__d">RL expert 또는 scripted policy 실행, trajectory 녹화 시작.</div>
-      <div class="ptl__note"><button class="ptl__note-toggle" onclick="toggleNote(this)">+ 메모 추가</button><textarea class="ptl__textarea" style="display:none" placeholder="이번 주 메모를 남기세요..." oninput="saveNotes(this)"></textarea><span class="ptl__saved"></span></div>
+      <div class="cmt-section"><div class="cmt-input-wrap"><input type="text" class="cmt-input" placeholder="메모 입력 후 Enter..." onkeydown="if(event.key==='Enter')postComment(this)"></div><div class="cmt-list"></div></div>
     </div>
     <div class="ptl__i" data-id="w4" data-status="not-started">
       <div class="ptl__header">
@@ -406,7 +420,7 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
       </div>
       <div class="ptl__d">품질 검증, language annotation 자동 생성.</div>
-      <div class="ptl__note"><button class="ptl__note-toggle" onclick="toggleNote(this)">+ 메모 추가</button><textarea class="ptl__textarea" style="display:none" placeholder="이번 주 메모를 남기세요..." oninput="saveNotes(this)"></textarea><span class="ptl__saved"></span></div>
+      <div class="cmt-section"><div class="cmt-input-wrap"><input type="text" class="cmt-input" placeholder="메모 입력 후 Enter..." onkeydown="if(event.key==='Enter')postComment(this)"></div><div class="cmt-list"></div></div>
     </div>
 
     <!-- Month 2 -->
@@ -417,7 +431,7 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
       </div>
       <div class="ptl__d">LoRA / grad ckpt / bf16 구성, HuggingFace weight 로드 테스트.</div>
-      <div class="ptl__note"><button class="ptl__note-toggle" onclick="toggleNote(this)">+ 메모 추가</button><textarea class="ptl__textarea" style="display:none" placeholder="이번 주 메모를 남기세요..." oninput="saveNotes(this)"></textarea><span class="ptl__saved"></span></div>
+      <div class="cmt-section"><div class="cmt-input-wrap"><input type="text" class="cmt-input" placeholder="메모 입력 후 Enter..." onkeydown="if(event.key==='Enter')postComment(this)"></div><div class="cmt-list"></div></div>
     </div>
     <div class="ptl__i" data-id="w6" data-status="not-started">
       <div class="ptl__header">
@@ -425,7 +439,7 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
       </div>
       <div class="ptl__d">Dexterous hand용 encoder/decoder 셋업, action space 매핑.</div>
-      <div class="ptl__note"><button class="ptl__note-toggle" onclick="toggleNote(this)">+ 메모 추가</button><textarea class="ptl__textarea" style="display:none" placeholder="이번 주 메모를 남기세요..." oninput="saveNotes(this)"></textarea><span class="ptl__saved"></span></div>
+      <div class="cmt-section"><div class="cmt-input-wrap"><input type="text" class="cmt-input" placeholder="메모 입력 후 Enter..." onkeydown="if(event.key==='Enter')postComment(this)"></div><div class="cmt-list"></div></div>
     </div>
     <div class="ptl__i" data-id="w7" data-status="not-started">
       <div class="ptl__header">
@@ -433,7 +447,7 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
       </div>
       <div class="ptl__d">학습 실행, loss curve 모니터링.</div>
-      <div class="ptl__note"><button class="ptl__note-toggle" onclick="toggleNote(this)">+ 메모 추가</button><textarea class="ptl__textarea" style="display:none" placeholder="이번 주 메모를 남기세요..." oninput="saveNotes(this)"></textarea><span class="ptl__saved"></span></div>
+      <div class="cmt-section"><div class="cmt-input-wrap"><input type="text" class="cmt-input" placeholder="메모 입력 후 Enter..." onkeydown="if(event.key==='Enter')postComment(this)"></div><div class="cmt-list"></div></div>
     </div>
     <div class="ptl__i" data-id="w8" data-status="not-started">
       <div class="ptl__header">
@@ -441,7 +455,7 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
       </div>
       <div class="ptl__d">실패 모드 파악, hyperparameter 조정, 초기 평가.</div>
-      <div class="ptl__note"><button class="ptl__note-toggle" onclick="toggleNote(this)">+ 메모 추가</button><textarea class="ptl__textarea" style="display:none" placeholder="이번 주 메모를 남기세요..." oninput="saveNotes(this)"></textarea><span class="ptl__saved"></span></div>
+      <div class="cmt-section"><div class="cmt-input-wrap"><input type="text" class="cmt-input" placeholder="메모 입력 후 Enter..." onkeydown="if(event.key==='Enter')postComment(this)"></div><div class="cmt-list"></div></div>
     </div>
 
     <!-- Month 3 -->
@@ -452,7 +466,7 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
       </div>
       <div class="ptl__d">language &rarr; GR00T N1.7 &rarr; dex hand &rarr; task completion 풀 파이프라인.</div>
-      <div class="ptl__note"><button class="ptl__note-toggle" onclick="toggleNote(this)">+ 메모 추가</button><textarea class="ptl__textarea" style="display:none" placeholder="이번 주 메모를 남기세요..." oninput="saveNotes(this)"></textarea><span class="ptl__saved"></span></div>
+      <div class="cmt-section"><div class="cmt-input-wrap"><input type="text" class="cmt-input" placeholder="메모 입력 후 Enter..." onkeydown="if(event.key==='Enter')postComment(this)"></div><div class="cmt-list"></div></div>
     </div>
     <div class="ptl__i" data-id="w10" data-status="not-started">
       <div class="ptl__header">
@@ -460,7 +474,7 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
       </div>
       <div class="ptl__d">EgoScale pretrained vs no-pretrain baseline 비교 실험.</div>
-      <div class="ptl__note"><button class="ptl__note-toggle" onclick="toggleNote(this)">+ 메모 추가</button><textarea class="ptl__textarea" style="display:none" placeholder="이번 주 메모를 남기세요..." oninput="saveNotes(this)"></textarea><span class="ptl__saved"></span></div>
+      <div class="cmt-section"><div class="cmt-input-wrap"><input type="text" class="cmt-input" placeholder="메모 입력 후 Enter..." onkeydown="if(event.key==='Enter')postComment(this)"></div><div class="cmt-list"></div></div>
     </div>
     <div class="ptl__i" data-id="w11" data-status="not-started">
       <div class="ptl__header">
@@ -468,7 +482,7 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
       </div>
       <div class="ptl__d">Tool-centric aux loss, language sensitivity 테스트.</div>
-      <div class="ptl__note"><button class="ptl__note-toggle" onclick="toggleNote(this)">+ 메모 추가</button><textarea class="ptl__textarea" style="display:none" placeholder="이번 주 메모를 남기세요..." oninput="saveNotes(this)"></textarea><span class="ptl__saved"></span></div>
+      <div class="cmt-section"><div class="cmt-input-wrap"><input type="text" class="cmt-input" placeholder="메모 입력 후 Enter..." onkeydown="if(event.key==='Enter')postComment(this)"></div><div class="cmt-list"></div></div>
     </div>
     <div class="ptl__i" data-id="w12" data-status="not-started">
       <div class="ptl__header">
@@ -476,7 +490,7 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
       </div>
       <div class="ptl__d">결과 정리, 실패 모드 분석, stretch goal 시도.</div>
-      <div class="ptl__note"><button class="ptl__note-toggle" onclick="toggleNote(this)">+ 메모 추가</button><textarea class="ptl__textarea" style="display:none" placeholder="이번 주 메모를 남기세요..." oninput="saveNotes(this)"></textarea><span class="ptl__saved"></span></div>
+      <div class="cmt-section"><div class="cmt-input-wrap"><input type="text" class="cmt-input" placeholder="메모 입력 후 Enter..." onkeydown="if(event.key==='Enter')postComment(this)"></div><div class="cmt-list"></div></div>
     </div>
 
     <!-- Month 4 -->
@@ -487,7 +501,7 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
       </div>
       <div class="ptl__d">최종 태스크 시연 영상 촬영 및 편집.</div>
-      <div class="ptl__note"><button class="ptl__note-toggle" onclick="toggleNote(this)">+ 메모 추가</button><textarea class="ptl__textarea" style="display:none" placeholder="이번 주 메모를 남기세요..." oninput="saveNotes(this)"></textarea><span class="ptl__saved"></span></div>
+      <div class="cmt-section"><div class="cmt-input-wrap"><input type="text" class="cmt-input" placeholder="메모 입력 후 Enter..." onkeydown="if(event.key==='Enter')postComment(this)"></div><div class="cmt-list"></div></div>
     </div>
     <div class="ptl__i" data-id="w14" data-status="not-started">
       <div class="ptl__header">
@@ -495,7 +509,7 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
       </div>
       <div class="ptl__d">코드 정리, README, 실행 가이드 작성.</div>
-      <div class="ptl__note"><button class="ptl__note-toggle" onclick="toggleNote(this)">+ 메모 추가</button><textarea class="ptl__textarea" style="display:none" placeholder="이번 주 메모를 남기세요..." oninput="saveNotes(this)"></textarea><span class="ptl__saved"></span></div>
+      <div class="cmt-section"><div class="cmt-input-wrap"><input type="text" class="cmt-input" placeholder="메모 입력 후 Enter..." onkeydown="if(event.key==='Enter')postComment(this)"></div><div class="cmt-list"></div></div>
     </div>
     <div class="ptl__i" data-id="w15" data-status="not-started">
       <div class="ptl__header">
@@ -503,7 +517,7 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
       </div>
       <div class="ptl__d">기술 보고서 작성, 포트폴리오 페이지 업데이트.</div>
-      <div class="ptl__note"><button class="ptl__note-toggle" onclick="toggleNote(this)">+ 메모 추가</button><textarea class="ptl__textarea" style="display:none" placeholder="이번 주 메모를 남기세요..." oninput="saveNotes(this)"></textarea><span class="ptl__saved"></span></div>
+      <div class="cmt-section"><div class="cmt-input-wrap"><input type="text" class="cmt-input" placeholder="메모 입력 후 Enter..." onkeydown="if(event.key==='Enter')postComment(this)"></div><div class="cmt-list"></div></div>
     </div>
     <div class="ptl__i" data-id="w16" data-status="not-started">
       <div class="ptl__header">
@@ -511,7 +525,7 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
       </div>
       <div class="ptl__d">전체 점검, GitHub Pages 배포, 최종 공개.</div>
-      <div class="ptl__note"><button class="ptl__note-toggle" onclick="toggleNote(this)">+ 메모 추가</button><textarea class="ptl__textarea" style="display:none" placeholder="이번 주 메모를 남기세요..." oninput="saveNotes(this)"></textarea><span class="ptl__saved"></span></div>
+      <div class="cmt-section"><div class="cmt-input-wrap"><input type="text" class="cmt-input" placeholder="메모 입력 후 Enter..." onkeydown="if(event.key==='Enter')postComment(this)"></div><div class="cmt-list"></div></div>
     </div>
   </div>
   <div class="ptl__last-update" id="last-update"></div>
@@ -568,25 +582,60 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
 
 </div>
 </main>
+<div class="nickname-bar">
+  <label>Nickname</label>
+  <input type="text" id="nickname-input" placeholder="이름..." maxlength="20">
+  <button class="admin-toggle" id="admin-btn" onclick="toggleAdmin()">Admin</button>
+</div>
 <footer class="footer">
   <div class="footer__t">Language-Conditioned Dexterous Tool Use via GR00T N1.7</div>
   <div class="footer__s">Aerospace GNC &times; Robotics &mdash; Side Project Portfolio</div>
 </footer>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script>
-// Sidebar scroll highlight
+// ===== SIDEBAR =====
 (function(){const e=document.querySelectorAll(".sidebar__link"),t=[];e.forEach(e=>{const n=e.getAttribute("href").substring(1),s=document.getElementById(n);s&&t.push({id:n,el:s,link:e})});function n(){const n=window.scrollY+120;let s=t[0];for(const e of t)e.el.offsetTop<=n&&(s=e);e.forEach(e=>e.classList.remove("active")),s&&s.link.classList.add("active")}window.addEventListener("scroll",n,{passive:!0}),n(),e.forEach(e=>{e.addEventListener("click",()=>{window.innerWidth<=768&&document.querySelector(".sidebar").classList.remove("open")})})})();
 
-// Progress Tracker
-const STORAGE_KEY='dextool_progress_v1';
+// ===== FIREBASE =====
+firebase.initializeApp({
+  apiKey:"AIzaSyBNTG-QLobYbdug78hclJDkwXm7kKF_MAI",
+  authDomain:"dexterous-tool-use.firebaseapp.com",
+  projectId:"dexterous-tool-use",
+  storageBucket:"dexterous-tool-use.firebasestorage.app",
+  messagingSenderId:"400066261115",
+  appId:"1:400066261115:web:2b0842c71571a79b4432de"
+});
+const db=firebase.firestore();
+const statusDoc=db.collection('progress').doc('shared');
+const cmtCol=db.collection('comments');
+
+// ===== ADMIN PIN =====
+// PIN은 Firestore config/admin 문서에 저장됨 (소스코드에 노출 안 됨)
+let isAdmin=false;
+
+function toggleAdmin(){
+  const btn=document.getElementById('admin-btn');
+  if(isAdmin){isAdmin=false;btn.classList.remove('active');renderAllDeleteBtns();return;}
+  const pin=prompt('Admin PIN:');
+  if(pin===null)return;
+  db.collection('config').doc('admin').get().then(snap=>{
+    if(snap.exists&&snap.data().pin===pin){
+      isAdmin=true;btn.classList.add('active');renderAllDeleteBtns();
+    }else{alert('PIN이 틀렸습니다.');}
+  }).catch(()=>alert('PIN 확인 실패. Firestore 연결을 확인하세요.'));
+}
+
+// ===== NICKNAME =====
+const nickInput=document.getElementById('nickname-input');
+nickInput.value=localStorage.getItem('dextool_nick')||'';
+nickInput.addEventListener('change',()=>{localStorage.setItem('dextool_nick',nickInput.value.trim());});
+function getNick(){return nickInput.value.trim()||'Anonymous';}
+
+// ===== STATUS TOGGLE =====
 const STATUS_CYCLE=['not-started','in-progress','done'];
 const STATUS_LABELS={'not-started':'Not Started','in-progress':'In Progress','done':'Done'};
-
-function loadProgress(){
-  try{const d=localStorage.getItem(STORAGE_KEY);return d?JSON.parse(d):{}}catch(e){return{}}
-}
-function saveProgress(data){
-  try{data._lastUpdate=new Date().toISOString();localStorage.setItem(STORAGE_KEY,JSON.stringify(data))}catch(e){}
-}
+let taskData={};
 
 function cycleStatus(btn){
   const item=btn.closest('.ptl__i');
@@ -596,40 +645,87 @@ function cycleStatus(btn){
   item.dataset.status=next;
   btn.dataset.val=next;
   btn.textContent=STATUS_LABELS[next];
-  const data=loadProgress();
-  if(!data.tasks)data.tasks={};
-  data.tasks[id]={status:next,note:(data.tasks[id]||{}).note||''};
-  saveProgress(data);
+  taskData[id]=next;
+  statusDoc.set({tasks:taskData,_lastUpdate:new Date().toISOString()},{merge:true});
   updateProgressBar();
-  showLastUpdate(data._lastUpdate);
 }
 
-function toggleNote(toggleBtn){
-  const textarea=toggleBtn.nextElementSibling;
-  const isHidden=textarea.style.display==='none';
-  textarea.style.display=isHidden?'block':'none';
-  toggleBtn.textContent=isHidden?'- 메모 접기':'+ 메모 추가';
-  if(isHidden)textarea.focus();
+// Listen for status changes
+statusDoc.onSnapshot(snap=>{
+  if(!snap.exists)return;
+  const d=snap.data();
+  if(d.tasks){
+    taskData=d.tasks;
+    Object.entries(d.tasks).forEach(([id,status])=>{
+      const item=document.querySelector('.ptl__i[data-id="'+id+'"]');
+      if(!item)return;
+      item.dataset.status=status;
+      const btn=item.querySelector('.status-btn');
+      btn.dataset.val=status;btn.textContent=STATUS_LABELS[status];
+    });
+    updateProgressBar();
+  }
+  if(d._lastUpdate)showLastUpdate(d._lastUpdate);
+});
+
+// ===== COMMENTS =====
+function postComment(input){
+  const text=input.value.trim();
+  if(!text)return;
+  const weekId=input.closest('.ptl__i').dataset.id;
+  cmtCol.add({
+    weekId:weekId,
+    author:getNick(),
+    text:text,
+    timestamp:firebase.firestore.FieldValue.serverTimestamp()
+  });
+  input.value='';
 }
 
-let saveTimer=null;
-function saveNotes(textarea){
-  clearTimeout(saveTimer);
-  saveTimer=setTimeout(()=>{
-    const item=textarea.closest('.ptl__i');
-    const id=item.dataset.id;
-    const data=loadProgress();
-    if(!data.tasks)data.tasks={};
-    if(!data.tasks[id])data.tasks[id]={status:'not-started',note:''};
-    data.tasks[id].note=textarea.value;
-    saveProgress(data);
-    const saved=textarea.nextElementSibling;
-    saved.textContent='Saved';saved.classList.add('show');
-    setTimeout(()=>saved.classList.remove('show'),1500);
-    showLastUpdate(data._lastUpdate);
-  },400);
+function deleteComment(docId){
+  if(!isAdmin)return;
+  cmtCol.doc(docId).delete().catch(e=>console.error(e));
 }
 
+function renderComment(doc,container){
+  const d=doc.data();
+  const el=document.createElement('div');
+  el.className='cmt';el.dataset.cmtId=doc.id;
+  const ts=d.timestamp?d.timestamp.toDate():new Date();
+  const timeStr=(ts.getMonth()+1)+'/'+ts.getDate()+' '+ts.getHours().toString().padStart(2,'0')+':'+ts.getMinutes().toString().padStart(2,'0');
+  let delBtn=isAdmin?'<button class="cmt__del" onclick="deleteComment(\''+doc.id+'\')" title="Delete">x</button>':'';
+  el.innerHTML='<span class="cmt__author">'+escHtml(d.author)+'</span><span class="cmt__text">'+escHtml(d.text)+'</span><span class="cmt__time">'+timeStr+'</span>'+delBtn;
+  container.appendChild(el);
+}
+
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function renderAllDeleteBtns(){
+  document.querySelectorAll('.cmt__del').forEach(b=>b.remove());
+  if(!isAdmin)return;
+  document.querySelectorAll('.cmt').forEach(el=>{
+    const id=el.dataset.cmtId;
+    const btn=document.createElement('button');
+    btn.className='cmt__del';btn.textContent='x';btn.title='Delete';
+    btn.onclick=()=>deleteComment(id);
+    el.appendChild(btn);
+  });
+}
+
+// Real-time comment listener
+cmtCol.orderBy('timestamp','asc').onSnapshot(snap=>{
+  // Clear all comment lists
+  document.querySelectorAll('.cmt-list').forEach(el=>el.innerHTML='');
+  snap.forEach(doc=>{
+    const d=doc.data();
+    const item=document.querySelector('.ptl__i[data-id="'+d.weekId+'"]');
+    if(!item)return;
+    const list=item.querySelector('.cmt-list');
+    renderComment(doc,list);
+  });
+});
+
+// ===== PROGRESS BAR =====
 function updateProgressBar(){
   const items=document.querySelectorAll('.ptl__i');
   const total=items.length;
@@ -648,41 +744,16 @@ function showLastUpdate(iso){
 }
 
 function resetProgress(){
-  if(!confirm('모든 진행 상황과 메모가 초기화됩니다. 계속할까요?'))return;
-  localStorage.removeItem(STORAGE_KEY);
+  if(!isAdmin){alert('Admin만 초기화할 수 있습니다.');return;}
+  if(!confirm('모든 진행 상황이 초기화됩니다. 댓글은 유지됩니다. 계속할까요?'))return;
+  statusDoc.delete();
   document.querySelectorAll('.ptl__i').forEach(i=>{
     i.dataset.status='not-started';
     const btn=i.querySelector('.status-btn');btn.dataset.val='not-started';btn.textContent='Not Started';
-    const ta=i.querySelector('.ptl__textarea');if(ta){ta.value='';ta.style.display='none';}
-    const toggle=i.querySelector('.ptl__note-toggle');if(toggle)toggle.textContent='+ 메모 추가';
   });
-  updateProgressBar();
+  taskData={};updateProgressBar();
   document.getElementById('last-update').textContent='';
 }
-
-// Restore saved state on load
-(function(){
-  const data=loadProgress();
-  if(data.tasks){
-    Object.entries(data.tasks).forEach(([id,val])=>{
-      const item=document.querySelector('.ptl__i[data-id="'+id+'"]');
-      if(!item)return;
-      if(val.status){
-        item.dataset.status=val.status;
-        const btn=item.querySelector('.status-btn');
-        btn.dataset.val=val.status;btn.textContent=STATUS_LABELS[val.status];
-      }
-      if(val.note){
-        const ta=item.querySelector('.ptl__textarea');
-        const toggle=item.querySelector('.ptl__note-toggle');
-        if(ta){ta.value=val.note;ta.style.display='block';}
-        if(toggle)toggle.textContent='- 메모 접기';
-      }
-    });
-  }
-  updateProgressBar();
-  if(data._lastUpdate)showLastUpdate(data._lastUpdate);
-})();
 </script>
 </body>
 </html>
