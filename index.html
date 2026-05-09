@@ -251,7 +251,7 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
 <nav class="top-nav">
   <button class="mnb" onclick="document.querySelector('.sidebar').classList.toggle('open')" aria-label="Nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
   <div class="top-nav__logo">Dexterous Tool Use<span class="accent">&thinsp;/&thinsp;</span>GR00T N1.7</div>
-  <div class="top-nav__meta"><span>Isaac Lab &middot; A100 Cloud</span><span class="badge-dur">3-4 Months</span></div>
+  <div class="top-nav__meta"><span>Isaac Lab &middot; A100 RunPod</span><span class="badge-dur">3-4 Months</span></div>
 </nav>
 <aside class="sidebar" id="sidebar">
   <div class="sidebar__label">Overview</div><a href="#hero" class="sidebar__link active" data-section="hero">Project Summary</a>
@@ -268,7 +268,7 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
   <p class="hero__sub">GR00T N1.7의 dexterous manipulation prior (EgoScale 20K시간 인간 영상 사전학습)를 contact-rich tool use로 확장하여, 기존 VLA가 다루지 못한 language-conditioned dexterous tool use를 Isaac Lab 시뮬레이션에서 구현한다.</p>
   <div class="hero__chips">
     <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>3&ndash;4개월</span>
-    <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>A100 Cloud</span>
+    <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>A100 RunPod</span>
     <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>Isaac Lab</span>
     <span class="chip chip--fill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>GR00T N1.7 (3B)</span>
   </div>
@@ -367,7 +367,7 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
     <li><strong>Embodiment adapter 구조 내장:</strong> 경량 MLP adapter로 다양한 로봇에 대응. &pi;0.5/&pi;0.7은 주로 평행 그리퍼 위주이므로 본 프로젝트에 부적합</li>
     <li><strong>NVIDIA 생태계:</strong> IsaacLabEvalTasks로 Isaac Lab 평가 연동 가능. 오픈 모델 (코드 Apache 2.0, weights NVIDIA Open Model License)</li>
     <li><strong>SimToolReal 데이터 호환:</strong> IsaacGym/IsaacLab에서 생성한 데이터를 LeRobot 포맷으로 변환하여 GR00T post-training에 직접 사용 가능</li>
-    <li>Inference 16GB+ VRAM, <strong>Fine-tuning 40GB+ 필요</strong> (A100 클라우드 사용)</li>
+    <li>Inference 16GB+ VRAM, <strong>Fine-tuning 40GB+ 필요</strong> (A100 RunPod)</li>
   </ul>
   <p class="st">GR00T N1.7에서도 Tool Use가 안 되는 이유</p>
   <ul class="bl">
@@ -388,7 +388,7 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
   <div class="tw"><table><thead><tr><th>확인 항목</th><th>구체적 방법</th><th>통과 기준</th><th>Fallback</th></tr></thead><tbody>
     <tr><td>GR00T N1.7 weights</td><td>HuggingFace 다운로드 &rarr; inference 테스트</td><td>이미지+언어로 action 출력 확인</td><td>N1.5 (GA, 커뮤니티 검증 풍부)</td></tr>
     <tr><td>SimToolReal 재현</td><td>레포 클론 &rarr; pretrained policy 다운로드 &rarr; IsaacGym rollout</td><td>기존 태스크 1개 이상 성공적 조작</td><td>코드+모델 완전 공개이므로 실패 가능성 낮음</td></tr>
-    <tr><td>A100 클라우드 확보</td><td>클라우드 인스턴스 &rarr; GR00T LoRA 1-step test</td><td>OOM 없이 forward+backward</td><td>다른 클라우드 (Lambda, RunPod 등)</td></tr>
+    <tr><td>A100 RunPod 확보</td><td>RunPod 인스턴스 &rarr; GR00T LoRA 1-step test</td><td>OOM 없이 forward+backward</td><td>Lambda, Vast.ai 등</td></tr>
     <tr><td>Isaac Lab dex hand (optional)</td><td>설치 &rarr; Shadow Hand 로드 &rarr; 기본 조작</td><td>관절 제어 + 물체 접촉 정상</td><td>IsaacGym에서 직접 데이터 수집</td></tr>
   </tbody></table></div>
 </div></details>
@@ -443,7 +443,7 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
         <div class="ptl__t">Wk 1: 게이트 (의존성 확인)</div>
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
       </div>
-      <div class="ptl__d">GR00T N1.7 weights inference 확인, SimToolReal 재현 (IsaacGym rollout), A100 클라우드 확보 및 fine-tuning 1-step 테스트.</div>
+      <div class="ptl__d">GR00T N1.7 weights inference 확인, SimToolReal 재현 (IsaacGym rollout), A100 RunPod 확보 및 fine-tuning 1-step 테스트.</div>
       <div class="cmt-section"><div class="cmt-input-wrap"><input type="text" class="cmt-input" placeholder="메모 입력 후 Enter..." onkeydown="if(event.key==='Enter')postComment(this)"></div><div class="cmt-list"></div></div>
     </div>
     <div class="ptl__i" data-id="w2" data-status="not-started">
@@ -478,7 +478,7 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
         <div class="ptl__t">Wk 5: Custom embodiment adapter + 학습 인프라</div>
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
       </div>
-      <div class="ptl__d">Sharpa/Shadow Hand용 modality config 작성. A100 클라우드에서 LoRA 셋업.</div>
+      <div class="ptl__d">Sharpa/Shadow Hand용 modality config 작성. A100 RunPod에서 LoRA 셋업.</div>
       <div class="cmt-section"><div class="cmt-input-wrap"><input type="text" class="cmt-input" placeholder="메모 입력 후 Enter..." onkeydown="if(event.key==='Enter')postComment(this)"></div><div class="cmt-list"></div></div>
     </div>
     <div class="ptl__i" data-id="w6" data-status="not-started">

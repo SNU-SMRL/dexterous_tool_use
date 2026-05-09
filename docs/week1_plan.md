@@ -128,23 +128,25 @@ uv run python scripts/deployment/standalone_inference_script.py \
 
 ---
 
-## Gate 3: A100 클라우드에서 GR00T Fine-tuning 1-step 테스트
+## Gate 3: A100 RunPod에서 GR00T Fine-tuning 1-step 테스트
 
 **목표:** OOM 없이 forward + backward 1 step 완료 확인
 
-### 3-1. 클라우드 인스턴스 확보
+### 3-1. RunPod 인스턴스 확보
 
-추천 클라우드 (A100 40GB 이상):
-- **Lambda Cloud** — A100 $1.29/hr, 가입 간편
-- **RunPod** — A100 80GB $1.64/hr, 시간 단위
-- **Vast.ai** — A100 $1~2/hr, 경매식
-- **Google Cloud / AWS** — A100 사용 가능, 설정 복잡
+**RunPod** (https://www.runpod.io)
+- A100 80GB: ~$1.10/hr (Community Cloud) / ~$1.64/hr (Secure Cloud)
+- 가입 시 $5-500 랜덤 크레딧
+- 시간 단위 과금, 웹 콘솔에서 바로 실행
 
 ```bash
-# 클라우드 인스턴스에서 GR00T 설치 (Gate 2와 동일)
+# RunPod에서 A100 80GB 인스턴스 생성 후:
+# Template: PyTorch 2.x + CUDA 12.x 선택
+
+# GR00T 설치
 git clone --recurse-submodules https://github.com/NVIDIA/Isaac-GR00T.git
 cd Isaac-GR00T
-uv sync --python 3.10
+pip install uv && uv sync --python 3.10
 ```
 
 ### 3-2. Fine-tuning 1-step 테스트
@@ -175,8 +177,7 @@ CUDA_VISIBLE_DEVICES=0 uv run python \
 - [ ] LoRA 옵션이 존재하는지 코드 탐색 (`grep -r "lora" gr00t/`)
 
 ### 실패 시
-- A100 40GB에서 OOM → batch_size 줄이기, gradient checkpointing
-- A100 40GB도 불가 → A100 80GB 인스턴스
+- A100 80GB에서 OOM → batch_size 줄이기, gradient checkpointing
 - LoRA 미지원 시 → 코드에서 PEFT 통합 직접 구현 (추후)
 
 ---
@@ -207,13 +208,13 @@ python -m isaaclab.scripts.run_env --task Isaac-Shadow-Hand-Over-v0
 Day 1-2: 환경 셋업
 ├── [로컬] SimToolReal 환경 (Python 3.8 + IsaacGym Preview 4)
 ├── [로컬] GR00T 환경 (Python 3.10)
-└── [클라우드] A100 인스턴스 계정 가입 + 셋업
+└── [RunPod] A100 인스턴스 계정 가입 + 셋업
 
 Day 3: Gate 1 + Gate 2 (로컬)
 ├── SimToolReal pretrained policy rollout 실행
 └── GR00T N1.7 inference 테스트
 
-Day 4: Gate 3 (클라우드)
+Day 4: Gate 3 (RunPod)
 └── A100에서 GR00T fine-tuning 1-step
 
 Day 5: 판단
@@ -231,7 +232,7 @@ Day 5: 판단
 | Gate 1~3 모두 통과 | 정상 진행. Week 2에서 데이터 녹화 파이프라인 구축 |
 | Gate 1 실패 (SimToolReal) | IsaacGym 설치 문제일 가능성 높음. 디버깅 후 재시도 |
 | Gate 2 실패 (GR00T inference) | N1.5로 전환 (GA, 안정적). 또는 CUDA 버전 문제 해결 |
-| Gate 3 실패 (fine-tuning OOM) | batch_size/gradient ckpt 조정. A100 80GB로 업그레이드 |
+| Gate 3 실패 (fine-tuning OOM) | batch_size/gradient ckpt 조정. RunPod에서 더 큰 인스턴스 시도 |
 | Gate 1+3 통과, Gate 2 실패 | N1.5로 전환해도 프로젝트 핵심은 유지됨 |
 
 ---
@@ -241,4 +242,4 @@ Day 5: 판단
 - [ ] SimToolReal 코드 읽기: goal pose 시퀀스가 어떻게 정의되어 있는지 파악 (`dextoolbench/` 디렉토리)
 - [ ] GR00T custom embodiment 문서 읽기: `getting_started/finetune_new_embodiment.md`
 - [ ] GR00T modality config 구조 파악: `examples/SO100/so100_config.py` 분석
-- [ ] 클라우드 GPU 비용 비교 + 예산 산정 (예: 2000 steps × 시간 × $/hr)
+- [ ] RunPod 예산 산정 (예: 2000 steps × 1step 시간 × ~$1.10/hr)
