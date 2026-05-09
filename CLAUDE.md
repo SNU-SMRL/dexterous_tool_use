@@ -60,7 +60,20 @@ For multi-step tasks, state a brief plan:
 
 Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
 
-## 5. Decision Log
+## 5. Code Style
+
+- Python 3.10, type hints on all function signatures.
+- Formatter: `ruff format`. Linter: `ruff check`.
+- Imports: stdlib → third-party → local, separated by blank lines. One import per line.
+- Naming: `snake_case` for functions/variables, `PascalCase` for classes, `UPPER_SNAKE` for constants.
+- No wildcard imports (`from x import *`).
+- Docstrings: one-line only, Google style, only when the function name alone is not self-explanatory.
+- Config files: YAML. Use `OmegaConf` or plain `yaml.safe_load`, not Hydra.
+- Scripts must be runnable standalone (`if __name__ == "__main__":`).
+- Paths: use `pathlib.Path`, not string concatenation.
+- No silent failures. Raise exceptions instead of returning defaults or falling back quietly. If something fails, it must be loud.
+
+## 6. Decision Log
 
 - Read `docs/decisions.md` at session start to understand prior decisions before working.
 - When a technical decision is made during the session (adoption, rejection, pivot), append it to `docs/decisions.md` at the end of the session.
