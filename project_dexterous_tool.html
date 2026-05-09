@@ -251,14 +251,14 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
 <nav class="top-nav">
   <button class="mnb" onclick="document.querySelector('.sidebar').classList.toggle('open')" aria-label="Nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
   <div class="top-nav__logo">Dexterous Tool Use<span class="accent">&thinsp;/&thinsp;</span>GR00T N1.7</div>
-  <div class="top-nav__meta"><span>Isaac Lab &middot; RTX 5080</span><span class="badge-dur">3-4 Months</span></div>
+  <div class="top-nav__meta"><span>Isaac Lab &middot; A100 Cloud</span><span class="badge-dur">3-4 Months</span></div>
 </nav>
 <aside class="sidebar" id="sidebar">
   <div class="sidebar__label">Overview</div><a href="#hero" class="sidebar__link active" data-section="hero">Project Summary</a>
   <div class="sidebar__label">Research</div><a href="#sec1" class="sidebar__link" data-section="sec1">1. 연구 배경</a><a href="#sec2" class="sidebar__link" data-section="sec2">2. 핵심 논문</a><a href="#sec3" class="sidebar__link" data-section="sec3">3. 핵심 Gap</a>
   <div class="sidebar__label">Design</div><a href="#sec4" class="sidebar__link" data-section="sec4">4. 시스템 설계</a><a href="#sec5" class="sidebar__link" data-section="sec5">5. Week 1 게이트</a><a href="#sec6" class="sidebar__link" data-section="sec6">6. 실험 설계</a>
   <div class="sidebar__label">Execution</div><a href="#sec7" class="sidebar__link" data-section="sec7">7. 타임라인 &amp; 진행</a><a href="#sec8" class="sidebar__link" data-section="sec8">8. 리스크</a><a href="#sec9" class="sidebar__link" data-section="sec9">9. 산출물</a>
-  <div class="sidebar__label">Reference</div><a href="#sec10" class="sidebar__link" data-section="sec10">10. 참고 문헌</a><a href="#secX" class="sidebar__link" data-section="secX">GR00T vs &pi;0.7</a>
+  <div class="sidebar__label">Reference</div><a href="#sec10" class="sidebar__link" data-section="sec10">10. 참고 문헌</a>
 </aside>
 
 <main class="main">
@@ -268,7 +268,7 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
   <p class="hero__sub">GR00T N1.7의 dexterous manipulation prior (EgoScale 20K시간 인간 영상 사전학습)를 contact-rich tool use로 확장하여, 기존 VLA가 다루지 못한 language-conditioned dexterous tool use를 Isaac Lab 시뮬레이션에서 구현한다.</p>
   <div class="hero__chips">
     <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>3&ndash;4개월</span>
-    <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>RTX 5080</span>
+    <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>A100 Cloud</span>
     <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>Isaac Lab</span>
     <span class="chip chip--fill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>GR00T N1.7 (3B)</span>
   </div>
@@ -282,7 +282,7 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
   <div class="fcards">
     <div class="fc"><div class="fc__n">Flow 1</div><div class="fc__t">VLA Models</div><div class="fc__d">&pi;0/&pi;0.5, GR00T N1.7, OpenVLA. 강력한 semantic understanding이나 tool use는 미검증. GR00T N1.7은 EgoScale로 22-DoF hand까지 확장했지만, 태스크는 rearrangement에 한정.</div></div>
     <div class="fc"><div class="fc__n">Flow 2</div><div class="fc__t">Dexterous RL</div><div class="fc__d">OpenAI Rubik's Cube, Visual Dexterity (Science Robotics 2023), DeXtreme (ICRA 2023), DexReMoE. Finger-level 제어는 성숙하나 시맨틱 이해 없음.</div></div>
-    <div class="fc"><div class="fc__n">Flow 3</div><div class="fc__t">Dexterous Tool Use</div><div class="fc__d">SimToolReal (Stanford, 2026), Grasp-to-Act (UIUC, 2026), DexMachina (Columbia/NVIDIA, 2025). 도구 affordance 기반 조작하나 VLA 통합 없고, 인간 시연 비디오 필요.</div></div>
+    <div class="fc"><div class="fc__n">Flow 3</div><div class="fc__t">Dexterous Tool Use</div><div class="fc__d">SimToolReal (Stanford, 2026, Sharpa Hand 22-DoF, 24 tasks), Grasp-to-Act (UIUC, 2026), DexMachina (Stanford/NVIDIA, 2025). 도구 affordance 기반 조작하나 VLA 통합 없고, goal pose 외부 제공 필요.</div></div>
   </div>
 
   <p class="lt" style="margin-top:var(--sp-xl)">GR00T N1 &mdash; NVIDIA Official Demo</p>
@@ -298,9 +298,9 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
 <details id="sec2"><summary><span class="sn">2</span>기존 연구 핵심 논문</summary><div class="db">
   <p class="lt">Dexterous Tool Use</p>
   <div class="tw"><table><thead><tr><th>논문</th><th>그룹</th><th>Venue</th><th>핵심 기여</th><th>한계</th></tr></thead><tbody>
-    <tr><td>SimToolReal</td><td>Stanford (Bohg, Liu)</td><td>RSS 2026</td><td>Tool use를 6D goal pose tracking으로 재정의. 24 tasks zero-shot</td><td>Goal pose를 인간 비디오에서 추출 필요</td></tr>
+    <tr><td>SimToolReal</td><td>Stanford (Kedia, Bohg, Liu)</td><td>RSS 2026</td><td>Sharpa Hand 22-DoF. Tool use를 6D goal pose tracking으로 재정의. 24 tasks zero-shot. 코드+모델 공개</td><td>Goal pose를 인간 비디오에서 추출 필요 (FoundationPose)</td></tr>
     <tr><td>Grasp-to-Act</td><td>UIUC (Yuan)</td><td>arXiv 2026</td><td>Physics grasp opt + RL residual</td><td>인간 시연 궤적 필요</td></tr>
-    <tr><td>DexMachina</td><td>Columbia/NVIDIA</td><td>arXiv 2025</td><td>Virtual object controller curriculum. Bimanual</td><td>VLA 통합 없음</td></tr>
+    <tr><td>DexMachina</td><td>Stanford/NVIDIA</td><td>arXiv 2025</td><td>Virtual object controller curriculum. Bimanual</td><td>VLA 통합 없음</td></tr>
     <tr><td>Dext. Func. Grasping</td><td>CMU (Pathak)</td><td>CoRL 2023</td><td>DINOv2 affordance + eigengrasp RL</td><td>Grasping까지만</td></tr>
     <tr><td>Articulated Tools</td><td>UCSD ARCLAB</td><td>arXiv 2025</td><td>가위/플라이어 관절 조작 + 촉각</td><td>도구별 특화</td></tr>
   </tbody></table></div>
@@ -320,7 +320,7 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
 
 <!-- 3 -->
 <details id="sec3"><summary><span class="sn">3</span>핵심 Gap 3가지</summary><div class="db">
-  <div class="gc"><div class="gc__l">Gap A</div><div class="gc__t">Language &rarr; Tool Trajectory 자동 생성</div><div class="gc__d">SimToolReal은 goal pose가 주어지면 도구를 다루지만, 인간 비디오에서 추출해야 한다. 자연어 명령에서 자동 생성하는 시스템 부재.</div></div>
+  <div class="gc"><div class="gc__l">Gap A</div><div class="gc__t">Language &rarr; Tool Trajectory 자동 생성</div><div class="gc__d">SimToolReal은 Sharpa Hand 22-DoF로 강력한 object-centric dexterous policy를 제공하지만, (1) goal pose를 외부에서 제공받아야 하며 (인간 비디오 &rarr; FoundationPose), (2) language understanding이 없다. 본 프로젝트는 SimToolReal의 데모 데이터로 GR00T N1.7을 post-training하여, goal pose 없이 language만으로 tool use를 수행한다.</div></div>
   <div class="gc"><div class="gc__l">Gap B</div><div class="gc__t">VLA의 Tool Use 미검증</div><div class="gc__d">GR00T N1.7이 dexterous manipulation을 수행하지만, rearrangement에 한정. Contact-rich tool use는 범위 밖.</div></div>
   <div class="gc"><div class="gc__l">Gap C</div><div class="gc__t">Grasp&ndash;Reorient&ndash;Use 통합</div><div class="gc__d">도구를 기능적으로 잡기 &rarr; 손 안 자세 조정 &rarr; 실제 사용. 이 full chain을 VLA로 엮은 연구 없음.</div></div>
 </div></details>
@@ -330,54 +330,66 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
   <p class="lt">Core Question</p>
   <p class="bt" style="font-weight:500;color:var(--c-ink);">GR00T N1.7의 dexterous manipulation prior를 tool use 태스크에 post-training하면 language-conditioned dexterous tool use가 가능한가?</p>
   <p class="st">Architecture</p>
-  <div class="arch"><pre><span class="hl">[Language + Camera Image + Robot State]</span>
+  <div class="arch"><pre><span class="cm">=== Training Pipeline ===</span>
+
+<span class="hl">[SimToolReal Policy (Sharpa Hand 22-DoF)]</span>
+              |
+    IsaacGym에서 rollout (완전 자동)
+              |
+    (RGB, language, joint, tool pose) &times; 500~5K+
+              |
+              v
+    +--------------------------+
+    |   <span class="hl">GR00T N1.7 (3B)</span>         |  <span class="cm">&lt;- post-training (LoRA)</span>
+    |   + Custom Embodiment     |  <span class="cm">&lt;- Sharpa/Shadow Hand</span>
+    |     Adapter               |  <span class="cm">   adapter 직접 구축</span>
+    +--------------------------+
+
+<span class="cm">=== Inference Pipeline ===</span>
+
+<span class="hl">[Language + Camera Image]</span>       <span class="cm">&lt;- goal pose 없음</span>
               |
     +--------------------------+
-    |   <span class="hl">GR00T N1.7 (3B)</span>         |  <span class="cm">&lt;- post-training 대상</span>
+    |   <span class="hl">GR00T N1.7 (3B)</span>         |
     |                          |
     |   System 2: VLM          |  Cosmos-Reason2-2B
-    |   <span class="cm">(reasoning/plan)</span>       |
+    |   <span class="cm">(language &rarr; plan)</span>      |
     |           |              |
     |   System 1: DiT          |  32-layer DiT
-    |   <span class="cm">(motor commands)</span>       |  flow matching
-    |                          |
-    |   Embodiment Adapter     |  <span class="cm">&lt;- dexterous hand용</span>
-    |   <span class="cm">(encoder/decoder)</span>      |
+    |   <span class="cm">(plan &rarr; motor cmds)</span>   |  flow matching
     +--------------------------+
               |
-    arm joint + hand joint actions
-              |
-    +--------------------------+
-    |       <span class="hl">Isaac Lab</span>            |
-    |   (Dex Hand + Tool)      |
-    +--------------------------+</pre></div>
+    arm joint + hand joint actions</pre></div>
   <div class="fig"><img src="https://arxiv.org/html/2503.14734v1/extracted/6306019/figures/model_arch.png" alt="GR00T N1 Architecture" loading="lazy" onerror="this.parentElement.style.display='none'"><div class="fig__c">Source: GR00T N1 Architecture &mdash; NVIDIA, 2025</div></div>
-  <p class="st">GR00T N1.7을 선택한 이유 (vs &pi;0.5)</p>
+  <p class="st">GR00T N1.7을 선택한 이유</p>
   <ul class="bl">
-    <li>EgoScale로 22-DoF dexterous hand 사전학습 완료 (&pi;0.5는 dex hand 데이터 없음)</li>
-    <li>Embodiment adapter 내장 &rarr; XL-VLA latent space 별도 구현 불필요</li>
-    <li>Isaac Lab과 같은 NVIDIA 생태계, 오픈 모델 + 상업 라이선스</li>
-    <li>Inference 16GB+ VRAM (5080 가능), Fine-tuning 40GB+ 추천</li>
+    <li><strong>EgoScale dexterous pretraining:</strong> 20,854시간 인간 영상으로 22-DoF hand 동작 representation 사전학습 완료. 릴리스된 embodiment adapter에 dex hand는 없으나, custom adapter 구축 후 post-training 시 EgoScale representation 활용 가능</li>
+    <li><strong>Embodiment adapter 구조 내장:</strong> 경량 MLP adapter로 다양한 로봇에 대응. &pi;0.5/&pi;0.7은 주로 평행 그리퍼 위주이므로 본 프로젝트에 부적합</li>
+    <li><strong>NVIDIA 생태계:</strong> IsaacLabEvalTasks로 Isaac Lab 평가 연동 가능. 오픈 모델 (코드 Apache 2.0, weights NVIDIA Open Model License)</li>
+    <li><strong>SimToolReal 데이터 호환:</strong> IsaacGym/IsaacLab에서 생성한 데이터를 LeRobot 포맷으로 변환하여 GR00T post-training에 직접 사용 가능</li>
+    <li>Inference 16GB+ VRAM, <strong>Fine-tuning 40GB+ 필요</strong> (A100 클라우드 사용)</li>
   </ul>
   <p class="st">GR00T N1.7에서도 Tool Use가 안 되는 이유</p>
   <ul class="bl">
     <li>학습 데이터가 rearrangement (물체 옮기기) 위주</li>
     <li>Contact-rich interaction (충격, 토크, 연속 저항) 학습 데이터 부재</li>
     <li>Tool-environment interaction semantics가 인코딩되지 않음</li>
+    <li>릴리스된 embodiment adapter에 dex hand 없음 (UNITREE_G1, LIBERO_PANDA 등만 제공)</li>
   </ul>
   <p class="st">데이터 파이프라인</p>
-  <p class="bt">Isaac Lab에서 RL expert 또는 pretrained/scripted policy를 실행하여 매 스텝 (RGB, language, joint, tool pose)를 녹화. 성공 에피소드 필터링 후 language annotation 자동 생성하여 5K~10K trajectory 확보.</p>
+  <p class="bt"><strong>SimToolReal pretrained policy</strong> (Sharpa Hand 22-DoF + KUKA iiwa 14)를 IsaacGym에서 실행하여 매 스텝 (RGB, joint state, tool 6D pose)를 녹화. 성공 에피소드 필터링 후 language annotation을 태스크별 템플릿으로 부여. GR00T post-training 형식으로 변환하여 500~5K+ trajectory 확보.</p>
+  <p class="bt" style="font-size:13px;color:var(--c-graphite)">SimToolReal은 goal-conditioned policy로, rollout이 완전 자동 (teleop 불필요). Goal pose 시퀀스는 SimToolReal 코드에 기존 태스크별로 정의되어 있음. 추론 시에는 GR00T가 language-only로 동작하며 goal pose는 사용하지 않음.</p>
   <div class="fig"><img src="https://arxiv.org/html/2503.14734v1/extracted/6306019/figures/data_pyramid.png" alt="Data Pyramid" loading="lazy" onerror="this.parentElement.style.display='none'"><div class="fig__c">Source: GR00T N1 Data Pyramid &mdash; NVIDIA, 2025</div></div>
 </div></details>
 
 <!-- 5 -->
 <details id="sec5"><summary><span class="sn">5</span>Week 1 게이트 &mdash; 의존성 확인</summary><div class="db">
-  <p class="bt">프로젝트 첫 주에 네 가지 의존성을 확인하고, 불통과 시 fallback 경로로 전환.</p>
-  <div class="tw"><table><thead><tr><th>확인 항목</th><th>방법</th><th>Fallback</th></tr></thead><tbody>
-    <tr><td>GR00T N1.7 weights</td><td>HuggingFace 다운로드 &rarr; inference 테스트</td><td>N1.5 (3B) 또는 &pi;0.5</td></tr>
-    <tr><td>Isaac Lab dex hand</td><td>설치 &rarr; Shadow/Allegro 로드</td><td>ManiSkill3 또는 그리퍼</td></tr>
-    <tr><td>5080 post-training</td><td>LoRA + grad ckpt + bf16</td><td>클라우드 A100</td></tr>
-    <tr><td>RL expert / policy</td><td>SimToolReal/DexMachina pretrained</td><td>Scripted &rarr; 그리퍼 우선</td></tr>
+  <p class="bt">프로젝트 첫 주에 핵심 의존성을 확인하고, 불통과 시 fallback 경로로 전환.</p>
+  <div class="tw"><table><thead><tr><th>확인 항목</th><th>구체적 방법</th><th>통과 기준</th><th>Fallback</th></tr></thead><tbody>
+    <tr><td>GR00T N1.7 weights</td><td>HuggingFace 다운로드 &rarr; inference 테스트</td><td>이미지+언어로 action 출력 확인</td><td>N1.5 (GA, 커뮤니티 검증 풍부)</td></tr>
+    <tr><td>SimToolReal 재현</td><td>레포 클론 &rarr; pretrained policy 다운로드 &rarr; IsaacGym rollout</td><td>기존 태스크 1개 이상 성공적 조작</td><td>코드+모델 완전 공개이므로 실패 가능성 낮음</td></tr>
+    <tr><td>A100 클라우드 확보</td><td>클라우드 인스턴스 &rarr; GR00T LoRA 1-step test</td><td>OOM 없이 forward+backward</td><td>다른 클라우드 (Lambda, RunPod 등)</td></tr>
+    <tr><td>Isaac Lab dex hand (optional)</td><td>설치 &rarr; Shadow Hand 로드 &rarr; 기본 조작</td><td>관절 제어 + 물체 접촉 정상</td><td>IsaacGym에서 직접 데이터 수집</td></tr>
   </tbody></table></div>
 </div></details>
 
@@ -385,14 +397,16 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
 <details id="sec6"><summary><span class="sn">6</span>실험 설계</summary><div class="db">
   <p class="bt"><strong>원칙:</strong> "1개 태스크 E2E demo + 핵심 ablation" &gt; "여러 태스크를 얕게"</p>
   <div class="tw"><table><thead><tr><th>Priority</th><th>실험</th><th>내용</th></tr></thead><tbody>
-    <tr><td><span class="rb rb--must">MUST</span></td><td>E2E Demo</td><td>language &rarr; GR00T N1.7 &rarr; dex hand &rarr; task completion</td></tr>
-    <tr><td><span class="rb rb--must">MUST</span></td><td>Pretrain 효과</td><td>EgoScale pretrained vs no-pretrain baseline</td></tr>
-    <tr><td><span class="rb rb--m">NICE</span></td><td>Tool-centric aux loss</td><td>Tool pose tracking error 추가 loss</td></tr>
+    <tr><td><span class="rb rb--must">MUST</span></td><td>E2E Demo</td><td>language &rarr; GR00T N1.7 &rarr; dex hand &rarr; task completion. <strong>핵심 결과물</strong></td></tr>
+    <tr><td><span class="rb rb--must">MUST</span></td><td>Pretrain 효과</td><td>EgoScale pretrained vs random init</td></tr>
+    <tr><td><span class="rb rb--m">NICE</span></td><td>Data Scaling</td><td>500 / 2K / 5K trajectories별 성능 변화. 추세 확인</td></tr>
+    <tr><td><span class="rb rb--m">NICE</span></td><td>SimToolReal vs GR00T</td><td>동일 태스크에서 SimToolReal(goal pose) vs GR00T(language only). Upper bound 대비 달성률</td></tr>
     <tr><td><span class="rb rb--m">NICE</span></td><td>Language Sensitivity</td><td>"stir clockwise" vs "counterclockwise"</td></tr>
-    <tr><td><span class="rb rb--l">STRETCH</span></td><td>2nd task / 일반화</td><td>학습 미포함 도구에 zero/few-shot</td></tr>
+    <tr><td><span class="rb rb--l">STRETCH</span></td><td>Goal Pose Ablation</td><td>GR00T에 goal pose 추가 입력 vs language-only</td></tr>
+    <tr><td><span class="rb rb--l">STRETCH</span></td><td>미학습 도구 zero-shot</td><td>일반화 테스트</td></tr>
   </tbody></table></div>
   <p class="st">평가 지표</p>
-  <ul class="bl"><li><strong>Task Completion Rate</strong></li><li><strong>Tool Pose Tracking Error</strong></li><li><strong>In-Hand Slip</strong></li></ul>
+  <ul class="bl"><li><strong>Task Completion Rate</strong></li><li><strong>Tool Pose Tracking Error</strong></li><li><strong>Language Instruction Following Accuracy</strong></li></ul>
 </div></details>
 
 <!-- 7 -->
@@ -424,90 +438,90 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
   <div class="ptl" id="progress-timeline">
     <!-- Month 1 -->
     <div class="ptl__i" data-id="w1" data-status="not-started">
-      <div class="ptl__month">Month 1 &mdash; 환경 + 데이터</div>
+      <div class="ptl__month">Month 1 &mdash; SimToolReal 재현 + 데이터 확보</div>
       <div class="ptl__header">
         <div class="ptl__t">Wk 1: 게이트 (의존성 확인)</div>
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
       </div>
-      <div class="ptl__d">GR00T N1.7 weights, Isaac Lab dex hand asset, post-training 가능 여부.</div>
+      <div class="ptl__d">GR00T N1.7 weights inference 확인, SimToolReal 재현 (IsaacGym rollout), A100 클라우드 확보 및 fine-tuning 1-step 테스트.</div>
       <div class="cmt-section"><div class="cmt-input-wrap"><input type="text" class="cmt-input" placeholder="메모 입력 후 Enter..." onkeydown="if(event.key==='Enter')postComment(this)"></div><div class="cmt-list"></div></div>
     </div>
     <div class="ptl__i" data-id="w2" data-status="not-started">
       <div class="ptl__header">
-        <div class="ptl__t">Wk 2: Isaac Lab 환경 구축</div>
+        <div class="ptl__t">Wk 2: 데이터 녹화 파이프라인 구축</div>
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
       </div>
-      <div class="ptl__d">Dex hand + tool 에셋 로드, 시뮬레이션 환경 세팅.</div>
+      <div class="ptl__d">SimToolReal rollout &rarr; 녹화 &rarr; success filtering. 1개 태스크로 시작.</div>
       <div class="cmt-section"><div class="cmt-input-wrap"><input type="text" class="cmt-input" placeholder="메모 입력 후 Enter..." onkeydown="if(event.key==='Enter')postComment(this)"></div><div class="cmt-list"></div></div>
     </div>
     <div class="ptl__i" data-id="w3" data-status="not-started">
       <div class="ptl__header">
-        <div class="ptl__t">Wk 3: Expert policy 실행 + 데이터 수집</div>
+        <div class="ptl__t">Wk 3: 데이터 수집 + language annotation</div>
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
       </div>
-      <div class="ptl__d">RL expert 또는 scripted policy 실행, trajectory 녹화 시작.</div>
+      <div class="ptl__d">1-2개 태스크, 500+ trajectories 수집. Language annotation + GR00T 형식 변환.</div>
       <div class="cmt-section"><div class="cmt-input-wrap"><input type="text" class="cmt-input" placeholder="메모 입력 후 Enter..." onkeydown="if(event.key==='Enter')postComment(this)"></div><div class="cmt-list"></div></div>
     </div>
     <div class="ptl__i" data-id="w4" data-status="not-started">
       <div class="ptl__header">
-        <div class="ptl__t">Wk 4: 데이터 검증, 5K+ trajectory</div>
+        <div class="ptl__t">Wk 4: 데이터 확장 또는 Isaac Lab 이식 시도</div>
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
       </div>
-      <div class="ptl__d">품질 검증, language annotation 자동 생성.</div>
+      <div class="ptl__d">추가 태스크/데이터 확보. 여유 시 Isaac Lab 이식 시도.</div>
       <div class="cmt-section"><div class="cmt-input-wrap"><input type="text" class="cmt-input" placeholder="메모 입력 후 Enter..." onkeydown="if(event.key==='Enter')postComment(this)"></div><div class="cmt-list"></div></div>
     </div>
 
     <!-- Month 2 -->
     <div class="ptl__i" data-id="w5" data-status="not-started">
-      <div class="ptl__month">Month 2 &mdash; 모델 학습</div>
+      <div class="ptl__month">Month 2 &mdash; GR00T Post-training</div>
       <div class="ptl__header">
-        <div class="ptl__t">Wk 5: Post-training 인프라 셋업</div>
+        <div class="ptl__t">Wk 5: Custom embodiment adapter + 학습 인프라</div>
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
       </div>
-      <div class="ptl__d">LoRA / grad ckpt / bf16 구성, HuggingFace weight 로드 테스트.</div>
+      <div class="ptl__d">Sharpa/Shadow Hand용 modality config 작성. A100 클라우드에서 LoRA 셋업.</div>
       <div class="cmt-section"><div class="cmt-input-wrap"><input type="text" class="cmt-input" placeholder="메모 입력 후 Enter..." onkeydown="if(event.key==='Enter')postComment(this)"></div><div class="cmt-list"></div></div>
     </div>
     <div class="ptl__i" data-id="w6" data-status="not-started">
       <div class="ptl__header">
-        <div class="ptl__t">Wk 6: Embodiment adapter 구성</div>
+        <div class="ptl__t">Wk 6: 첫 학습 실행</div>
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
       </div>
-      <div class="ptl__d">Dexterous hand용 encoder/decoder 셋업, action space 매핑.</div>
+      <div class="ptl__d">500 trajectory로 학습. Loss curve 확인, 기본 동작 생성 여부 검증.</div>
       <div class="cmt-section"><div class="cmt-input-wrap"><input type="text" class="cmt-input" placeholder="메모 입력 후 Enter..." onkeydown="if(event.key==='Enter')postComment(this)"></div><div class="cmt-list"></div></div>
     </div>
     <div class="ptl__i" data-id="w7" data-status="not-started">
       <div class="ptl__header">
-        <div class="ptl__t">Wk 7: Post-training 실행</div>
+        <div class="ptl__t">Wk 7: 디버깅 + 반복</div>
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
       </div>
-      <div class="ptl__d">학습 실행, loss curve 모니터링.</div>
+      <div class="ptl__d">실패 모드 파악, hyperparameter 조정. 데이터 추가 투입.</div>
       <div class="cmt-section"><div class="cmt-input-wrap"><input type="text" class="cmt-input" placeholder="메모 입력 후 Enter..." onkeydown="if(event.key==='Enter')postComment(this)"></div><div class="cmt-list"></div></div>
     </div>
     <div class="ptl__i" data-id="w8" data-status="not-started">
       <div class="ptl__header">
-        <div class="ptl__t">Wk 8: 디버깅 + 첫 결과</div>
+        <div class="ptl__t">Wk 8: 초기 E2E 테스트</div>
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
       </div>
-      <div class="ptl__d">실패 모드 파악, hyperparameter 조정, 초기 평가.</div>
+      <div class="ptl__d">language &rarr; action &rarr; sim에서 실행. 동작 품질 1차 평가.</div>
       <div class="cmt-section"><div class="cmt-input-wrap"><input type="text" class="cmt-input" placeholder="메모 입력 후 Enter..." onkeydown="if(event.key==='Enter')postComment(this)"></div><div class="cmt-list"></div></div>
     </div>
 
     <!-- Month 3 -->
     <div class="ptl__i" data-id="w9" data-status="not-started">
-      <div class="ptl__month">Month 3 &mdash; 실험</div>
+      <div class="ptl__month">Month 3 &mdash; 실험 + 데모</div>
       <div class="ptl__header">
-        <div class="ptl__t">Wk 9: E2E Demo (Must-have)</div>
+        <div class="ptl__t">Wk 9: E2E Demo (MUST)</div>
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
       </div>
-      <div class="ptl__d">language &rarr; GR00T N1.7 &rarr; dex hand &rarr; task completion 풀 파이프라인.</div>
+      <div class="ptl__d">최선의 checkpoint로 task completion 시연. 데모 영상 1차 촬영.</div>
       <div class="cmt-section"><div class="cmt-input-wrap"><input type="text" class="cmt-input" placeholder="메모 입력 후 Enter..." onkeydown="if(event.key==='Enter')postComment(this)"></div><div class="cmt-list"></div></div>
     </div>
     <div class="ptl__i" data-id="w10" data-status="not-started">
       <div class="ptl__header">
-        <div class="ptl__t">Wk 10: Pretrain 효과 Ablation (Must-have)</div>
+        <div class="ptl__t">Wk 10: Pretrain 효과 Ablation (MUST)</div>
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
       </div>
-      <div class="ptl__d">EgoScale pretrained vs no-pretrain baseline 비교 실험.</div>
+      <div class="ptl__d">EgoScale pretrained vs random init 비교.</div>
       <div class="cmt-section"><div class="cmt-input-wrap"><input type="text" class="cmt-input" placeholder="메모 입력 후 Enter..." onkeydown="if(event.key==='Enter')postComment(this)"></div><div class="cmt-list"></div></div>
     </div>
     <div class="ptl__i" data-id="w11" data-status="not-started">
@@ -515,7 +529,7 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
         <div class="ptl__t">Wk 11: Nice-to-have 실험</div>
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
       </div>
-      <div class="ptl__d">Tool-centric aux loss, language sensitivity 테스트.</div>
+      <div class="ptl__d">Data scaling (2-3 스케일), SimToolReal vs GR00T 비교, language sensitivity.</div>
       <div class="cmt-section"><div class="cmt-input-wrap"><input type="text" class="cmt-input" placeholder="메모 입력 후 Enter..." onkeydown="if(event.key==='Enter')postComment(this)"></div><div class="cmt-list"></div></div>
     </div>
     <div class="ptl__i" data-id="w12" data-status="not-started">
@@ -523,13 +537,13 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
         <div class="ptl__t">Wk 12: 실패 분석 + 추가 실험</div>
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
       </div>
-      <div class="ptl__d">결과 정리, 실패 모드 분석, stretch goal 시도.</div>
+      <div class="ptl__d">결과 정리, 실패 분석.</div>
       <div class="cmt-section"><div class="cmt-input-wrap"><input type="text" class="cmt-input" placeholder="메모 입력 후 Enter..." onkeydown="if(event.key==='Enter')postComment(this)"></div><div class="cmt-list"></div></div>
     </div>
 
     <!-- Month 4 -->
     <div class="ptl__i" data-id="w13" data-status="not-started">
-      <div class="ptl__month">Month 4 (Buffer) &mdash; 정리</div>
+      <div class="ptl__month">Month 4 (Buffer) &mdash; 산출물 정리</div>
       <div class="ptl__header">
         <div class="ptl__t">Wk 13: 데모 영상 제작</div>
         <button class="status-btn" data-val="not-started" onclick="cycleStatus(this)">Not Started</button>
@@ -569,26 +583,25 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
 <!-- 8 -->
 <details id="sec8"><summary><span class="sn">8</span>리스크 및 Fallback</summary><div class="db">
   <div class="tw"><table><thead><tr><th>리스크</th><th>확률</th><th>Fallback</th></tr></thead><tbody>
-    <tr><td>Post-training 5080 안 됨</td><td><span class="rb rb--m">중</span></td><td>클라우드 A100</td></tr>
-    <tr><td>RL expert 학습 실패</td><td><span class="rb rb--h">상</span></td><td>Pretrained / scripted / 그리퍼</td></tr>
-    <tr><td>N1.7 Early Access 제한</td><td><span class="rb rb--l">낮</span></td><td>N1.5 (3B)</td></tr>
-    <tr><td>Contact sim 불안정</td><td><span class="rb rb--m">중</span></td><td>stir 한정, hammer 회피</td></tr>
-    <tr><td>RL expert 비자연적</td><td><span class="rb rb--m">중</span></td><td>Functional grasp constraint</td></tr>
-    <tr><td>3개월 내 미완성</td><td><span class="rb rb--m">중</span></td><td>1개 태스크 E2E 최우선</td></tr>
+    <tr><td>GR00T custom embodiment adapter 구축 난이도</td><td><span class="rb rb--m">중</span></td><td>공식 custom embodiment 등록 절차. Shadow Hand로 대체 가능</td></tr>
+    <tr><td>Sharpa Hand 에셋 미확보</td><td><span class="rb rb--m">중</span></td><td>Shadow Hand (Isaac Lab 기본) 또는 Allegro. 단 SimToolReal policy 직접 사용 불가</td></tr>
+    <tr><td>N1.7 Early Access 불안정</td><td><span class="rb rb--m">중</span></td><td>N1.5 (GA, 커뮤니티 fine-tuning 사례 다수)</td></tr>
+    <tr><td>Contact sim 불안정</td><td><span class="rb rb--m">중</span></td><td>stir/scoop 등 저충격 태스크 한정</td></tr>
+    <tr><td><strong>Language-only로 충분한 성능 안 나옴</strong></td><td><span class="rb rb--h">상</span></td><td>부분 성공이라도 데모. 실패 분석 자체가 insight</td></tr>
+    <tr><td>3개월 내 미완성</td><td><span class="rb rb--m">중</span></td><td>1개 태스크 E2E demo만이라도 확보</td></tr>
   </tbody></table></div>
 </div></details>
 
 <!-- 9 -->
 <details id="sec9"><summary><span class="sn">9</span>기대 산출물</summary><div class="db">
   <div class="dg">
-    <div class="dc"><div class="dc__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg></div><div class="dc__t">Isaac Lab 환경</div><div class="dc__d">Dex hand + tool</div></div>
-    <div class="dc"><div class="dc__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div><div class="dc__t">Dataset</div><div class="dc__d">5K~10K trajectories</div></div>
-    <div class="dc"><div class="dc__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div><div class="dc__t">Post-trained Model</div><div class="dc__d">GR00T N1.7</div></div>
-    <div class="dc"><div class="dc__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><div class="dc__t">실험 결과</div><div class="dc__d">Ablation + 분석</div></div>
-    <div class="dc"><div class="dc__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div><div class="dc__t">Demo 영상</div><div class="dc__d">Task 시연</div></div>
-    <div class="dc"><div class="dc__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg></div><div class="dc__t">GitHub Repo</div><div class="dc__d">코드 + 문서</div></div>
+    <div class="dc"><div class="dc__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div><div class="dc__t">Demo 영상</div><div class="dc__d">Language &rarr; tool use 시연 (핵심)</div></div>
+    <div class="dc"><div class="dc__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div><div class="dc__t">Post-trained Model</div><div class="dc__d">GR00T N1.7 checkpoint</div></div>
+    <div class="dc"><div class="dc__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div><div class="dc__t">Dataset</div><div class="dc__d">500~5K+ trajectories</div></div>
+    <div class="dc"><div class="dc__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><div class="dc__t">실험 결과</div><div class="dc__d">E2E demo + pretrain 효과</div></div>
+    <div class="dc"><div class="dc__ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg></div><div class="dc__t">GitHub Repo</div><div class="dc__d">코드 + 재현 가이드</div></div>
   </div>
-  <div class="pf"><strong>Portfolio&thinsp;:</strong> "GR00T N1.7의 dexterous manipulation prior를 tool use에 확장하여, language-conditioned dexterous tool use 파이프라인을 Isaac Lab에서 구현하고, EgoScale pretrained representation의 tool use 전이 가능성을 실험적으로 검증했다."</div>
+  <div class="pf"><strong>Portfolio&thinsp;:</strong> "SimToolReal의 dexterous tool use 데모 데이터로 GR00T N1.7을 post-training하여, goal pose 없이 language만으로 dexterous tool use를 수행하는 가능성을 시뮬레이션에서 검증했다."</div>
 </div></details>
 
 <!-- 10 -->
@@ -599,20 +612,13 @@ code{font-family:'SF Mono','Fira Code',monospace;font-size:12px;background:var(-
     <tr><td>XL-VLA</td><td>UCSD/Berkeley</td><td>CVPR 2026</td><td>Latent action space</td></tr>
     <tr><td>SimToolReal</td><td>Stanford</td><td>RSS 2026</td><td>Object-centric tool use</td></tr>
     <tr><td>Grasp-to-Act</td><td>UIUC</td><td>2026</td><td>Dynamic grasp adaptation</td></tr>
-    <tr><td>DexMachina</td><td>Columbia/NVIDIA</td><td>2025</td><td>Functional retargeting</td></tr>
+    <tr><td>DexMachina</td><td>Stanford/NVIDIA</td><td>2025</td><td>Functional retargeting</td></tr>
     <tr><td>&pi;0 / &pi;0.5 / &pi;0.7</td><td>Physical Intelligence</td><td>2024-2026</td><td>Flow matching VLA</td></tr>
     <tr><td>Visual Dexterity</td><td>UW/Meta</td><td>Sci. Rob. 2023</td><td>In-hand reorientation</td></tr>
     <tr><td>Dext. Func. Grasping</td><td>CMU (Pathak)</td><td>CoRL 2023</td><td>Affordance grasping</td></tr>
   </tbody></table></div>
 </div></details>
 
-<!-- X -->
-<details id="secX"><summary><span class="sn" style="background:var(--c-charcoal)">+</span>GR00T N1.7 vs &pi;0.7 철학 비교</summary><div class="db">
-  <div class="cg">
-    <div class="cc"><div class="cc__t">GR00T N1.7</div><div class="cc__i"><strong>공개:</strong> 오픈 (Apache 2.0)</div><div class="cc__i"><strong>아키텍처:</strong> System 1/2 분리 (VLM + DiT)</div><div class="cc__i"><strong>데이터:</strong> "인간 데이터가 최고" (EgoScale 20K시간)</div><div class="cc__i"><strong>일반화:</strong> Cross-embodiment</div><div class="cc__i"><strong>Dex hand:</strong> 22-DoF 학습 완료</div><div class="cc__i"><strong>Tool use:</strong> 미지원 (rearrangement만)</div></div>
-    <div class="cc"><div class="cc__t">&pi;0.7</div><div class="cc__i"><strong>공개:</strong> 클로즈드</div><div class="cc__i"><strong>아키텍처:</strong> MoE 통합 (VLM + action expert)</div><div class="cc__i"><strong>데이터:</strong> "로봇 데이터 기본, 웹 보조"</div><div class="cc__i"><strong>일반화:</strong> Compositional (같은 로봇, 새 태스크)</div><div class="cc__i"><strong>Dex hand:</strong> 평행 그리퍼만</div><div class="cc__i"><strong>Tool use:</strong> 미지원 (제한적)</div></div>
-  </div>
-</div></details>
 
 </div>
 </main>
