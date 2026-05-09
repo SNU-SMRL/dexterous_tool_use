@@ -216,3 +216,49 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ============================================
+# Project-specific: Dexterous Tool Use
+# ============================================
+
+# Data (large, generated)
+data/
+datasets/
+
+# Model weights & checkpoints
+outputs/
+checkpoints/
+pretrained_policy/
+*.pth
+*.pt
+*.ckpt
+*.safetensors
+
+# Except .gitkeep files
+!**/.gitkeep
+
+# IsaacGym (installed externally)
+isaacgym/
+
+# Isaac Lab
+_isaac_sim/
+
+# Simulation recordings
+recordings/
+*.mp4
+*.avi
+*.mkv
+
+# W&B / TensorBoard
+wandb/
+runs/
+tb_logs/
+
+# HuggingFace cache
+.cache/huggingface/
+
+# Cloud config
+.cloud/
+
+# Claude Code
+.claude/
