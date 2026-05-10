@@ -121,6 +121,7 @@ uv run python scripts/deployment/standalone_inference_script.py \
 - [ ] weights 다운로드 완료 (~6GB)
 - [ ] inference 스크립트가 action 벡터 출력 (에러 없음)
 - [ ] VRAM 사용량 확인 (16GB 이내여야 함)
+- [ ] 모델 클래스 확인: `print(type(model))` — HF transformers 호환 여부 기록
 
 ### 실패 시
 - N1.7 Early Access 접근 불가 → N1.5로 전환 (GA, 안정적)
@@ -128,9 +129,52 @@ uv run python scripts/deployment/standalone_inference_script.py \
 
 ---
 
+## Gate 2.5 (조건부): 로컬 5080 QLoRA 1-step 테스트
+
+**목표:** QLoRA로 5080 16GB에서 fine-tuning 가능 여부 확인
+
+### 2.5-1. 환경 추가
+
+```bash
+# Gate 2 환경(.venv-groot)에서 추가 설치
+uv pip install bitsandbytes peft
+```
+
+### 2.5-2. QLoRA 1-step 테스트
+
+Gate 2에서 확인한 모델 클래스에 따라 접근 방법이 달라짐:
+
+**경로 A: HF transformers 호환 시**
+
+```python
+from transformers import AutoModel, BitsAndBytesConfig
+from peft import get_peft_model, LoraConfig
+
+bnb_config = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_compute_dtype="float16")
+model = AutoModel.from_pretrained("nvidia/GR00T-N1.7-3B", quantization_config=bnb_config)
+model = get_peft_model(model, LoraConfig(r=16, lora_alpha=32, target_modules="all-linear"))
+```
+
+**경로 B: 커스텀 클래스 시**
+
+- GR00T 모델 코드에서 backbone (Eagle vision encoder + LLM) 구조 파악
+- Linear 레이어에 직접 PEFT LoRA inject (`peft.inject_adapter_in_model`)
+- 4-bit quantization은 `bitsandbytes.nn.Linear4bit`로 수동 교체, 또는 `torchao` 사용
+
+### 통과 기준
+- [ ] 5080 16GB에서 OOM 없이 1 step forward + backward 완료
+- [ ] VRAM 사용량 기록 (batch_size별)
+
+### 실패 시
+- OOM → batch_size 줄이기, gradient checkpointing 시도
+- 경로 B 통합 난이도가 높으면 → 시간 상한 설정 (예: 반나절), 초과 시 Gate 3으로 진행
+- QLoRA 자체가 안 되더라도 Gate 3 (A100 full fine-tuning)은 정상 진행
+
+---
+
 ## Gate 3: A100 RunPod에서 GR00T Fine-tuning 1-step 테스트
 
-**목표:** OOM 없이 forward + backward 1 step 완료 확인
+**목표:** OOM 없이 forward + backward 1 step 완료 확인 (GR00T 데모 데이터 사용, SimToolReal과 무관)
 
 ### 3-1. RunPod 인스턴스 확보
 
@@ -212,13 +256,18 @@ Day 1-2: 환경 셋업
 
 Day 3: Gate 1 + Gate 2 (로컬)
 ├── SimToolReal pretrained policy rollout 실행
-└── GR00T N1.7 inference 테스트
+└── GR00T N1.7 inference 테스트 + 모델 클래스 확인
 
-Day 4: Gate 3 (RunPod)
-└── A100에서 GR00T fine-tuning 1-step
+Day 3-4: Gate 2.5 (로컬 5080)
+└── QLoRA 1-step 테스트 (경로 A or B)
+
+Day 4-5: Gate 3 (RunPod)
+└── A100에서 GR00T full fine-tuning 1-step
 
 Day 5: 판단
 ├── 게이트 통과 현황 정리
+├── QLoRA vs full fine-tuning 가능 여부 비교
+├── 경로 결정: 로컬 5080 QLoRA vs A100 클라우드
 ├── 경로 결정: IsaacGym 직접 사용 vs Isaac Lab 이식
 └── Week 2 세부 계획 수립
 ```
@@ -229,7 +278,8 @@ Day 5: 판단
 
 | 결과 | 다음 행동 |
 |---|---|
-| Gate 1~3 모두 통과 | 정상 진행. Week 2에서 데이터 녹화 파이프라인 구축 |
+| Gate 1~3 모두 통과, 2.5도 통과 | 로컬 5080 QLoRA로 진행. 클라우드 비용 절감 |
+| Gate 1~3 모두 통과, 2.5 실패 | A100 클라우드로 정상 진행. Week 2에서 데이터 녹화 파이프라인 구축 |
 | Gate 1 실패 (SimToolReal) | IsaacGym 설치 문제일 가능성 높음. 디버깅 후 재시도 |
 | Gate 2 실패 (GR00T inference) | N1.5로 전환 (GA, 안정적). 또는 CUDA 버전 문제 해결 |
 | Gate 3 실패 (fine-tuning OOM) | batch_size/gradient ckpt 조정. RunPod에서 더 큰 인스턴스 시도 |
