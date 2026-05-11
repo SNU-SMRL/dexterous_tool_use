@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<robot name="cuboid">
+
+  <link name="cuboid">
+    <!-- Handle -->
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.1415861880342119 0.049894998940554255 0.06609371175115585"/>
+      </geometry>
+      <material name="brown">
+        <color rgba="0.55 0.27 0.07 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.1415861880342119 0.049894998940554255 0.06609371175115585"/>
+      </geometry>
+    </collision>
+
+    <inertial>
+      <density value="581.8496824692568"/>
+    </inertial>
+  </link>
+
+</robot>

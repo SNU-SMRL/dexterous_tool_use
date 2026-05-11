@@ -85,16 +85,17 @@ class SimToolRealEnv(DirectRLEnv):
         # --- Keypoint offsets (4 corners of unit cube, scaled by object size) ---
         from .simtoolreal_env_cfg import KEYPOINT_OFFSETS
 
-        kp_raw = torch.tensor(KEYPOINT_OFFSETS, dtype=torch.float32, device=self.device)
-        kp_scale = self.cfg.object_base_size * self.cfg.keypoint_scale / 2.0
-        self.keypoint_offsets = kp_raw * kp_scale  # (4, 3)
+        self.keypoint_offsets_unit = torch.tensor(
+            KEYPOINT_OFFSETS, dtype=torch.float32, device=self.device
+        )  # (4, 3), ±1 unit cube corners
         self.num_keypoints = len(KEYPOINT_OFFSETS)
         self.num_fingertips = len(self.fingertip_body_ids)
 
-        # --- Object scale buffer (Phase 1: fixed, Phase 2.5: per-env) ---
-        self.object_scales = torch.ones(
-            self.num_envs, 3, dtype=torch.float32, device=self.device
+        # --- Object scale buffer ---
+        scale_override = torch.tensor(
+            self.cfg.object_scale_override, dtype=torch.float32, device=self.device
         )
+        self.object_scales = scale_override.unsqueeze(0).expand(self.num_envs, -1).clone()
 
         # --- Reward tracking ---
         self.lifted_object = torch.zeros(
@@ -103,9 +104,10 @@ class SimToolRealEnv(DirectRLEnv):
         self.near_goal_steps = torch.zeros(
             self.num_envs, dtype=torch.int32, device=self.device
         )
-        self.goal_reached = torch.zeros(
-            self.num_envs, dtype=torch.bool, device=self.device
+        self.successes = torch.zeros(
+            self.num_envs, dtype=torch.float32, device=self.device
         )
+        self.max_consecutive_successes = 50
         # Best-so-far distances (initialized to -1, set on first frame)
         self.closest_fingertip_dist = -torch.ones(
             self.num_envs, self.num_fingertips, dtype=torch.float32, device=self.device
@@ -219,7 +221,7 @@ class SimToolRealEnv(DirectRLEnv):
         # --- Reward buffers ---
         self.lifted_object[env_ids] = False
         self.near_goal_steps[env_ids] = 0
-        self.goal_reached[env_ids] = False
+        self.successes[env_ids] = 0.0
         self.closest_fingertip_dist[env_ids] = -1.0
         self.closest_keypoint_max_dist[env_ids] = -1.0
         self.object_init_z[env_ids] = object_pose[:, 2] - self.scene.env_origins[env_ids, 2]
@@ -233,9 +235,9 @@ class SimToolRealEnv(DirectRLEnv):
     def _apply_action(self) -> None:
         dt = self.cfg.sim.dt * self.cfg.decimation
 
-        # Arm: relative incremental control
+        # Arm: incremental from prev_targets (not current joint_pos)
         arm_targets = (
-            self.robot.data.joint_pos[:, : self.num_arm_dofs]
+            self.prev_targets[:, : self.num_arm_dofs]
             + self.cfg.dof_speed_scale * dt * self.actions[:, : self.num_arm_dofs]
         )
         arm_targets = (
@@ -243,8 +245,8 @@ class SimToolRealEnv(DirectRLEnv):
             + (1.0 - self.cfg.arm_moving_average) * self.prev_targets[:, : self.num_arm_dofs]
         )
 
-        # Hand: [-1, 1] → joint limits, with smoothing
-        hand_targets = scale_transform(
+        # Hand: [-1, 1] → [lower, upper] joint limits, with smoothing
+        hand_targets = unscale_transform(
             self.actions[:, self.num_arm_dofs :],
             self.dof_lower[:, self.num_arm_dofs :],
             self.dof_upper[:, self.num_arm_dofs :],
@@ -297,10 +299,11 @@ class SimToolRealEnv(DirectRLEnv):
         self.object_linvel = self.object.data.root_lin_vel_w
         self.object_angvel = self.object.data.root_ang_vel_w
 
-        # Keypoints — 4 corners in world frame, then local
-        kp_offsets_expanded = self.keypoint_offsets.unsqueeze(0).expand(
-            self.num_envs, -1, -1
-        )  # (N, 4, 3)
+        # Keypoints — 4 corners scaled by per-env object_scale
+        # Original: offset[coord] = ±1 * object_scale[coord] * base_size * kp_scale / 2
+        kp_base = self.keypoint_offsets_unit.unsqueeze(0)  # (1, 4, 3)
+        scale_factor = self.object_scales.unsqueeze(1) * self.cfg.object_base_size * self.cfg.keypoint_scale / 2.0  # (N, 1, 3)
+        kp_offsets_expanded = kp_base * scale_factor  # (N, 4, 3)
         obj_quat_expanded = self.object_quat.unsqueeze(1).expand(
             -1, self.num_keypoints, -1
         )  # (N, 4, 4)
@@ -323,8 +326,8 @@ class SimToolRealEnv(DirectRLEnv):
 
         obs = torch.cat(
             [
-                # Joint state (scaled to [-1, 1])
-                unscale_transform(self.joint_pos, self.dof_lower, self.dof_upper),
+                # Joint state normalized to [-1, 1]
+                scale_transform(self.joint_pos, self.dof_lower, self.dof_upper),
                 self.joint_vel,
                 self.prev_targets,
                 # Palm
@@ -347,6 +350,7 @@ class SimToolRealEnv(DirectRLEnv):
             ],
             dim=-1,
         )
+        obs = torch.clamp(obs, -10.0, 10.0)
         return {"policy": obs}
 
     # ---------------------------------------------------------------
@@ -400,12 +404,19 @@ class SimToolRealEnv(DirectRLEnv):
             * self.cfg.hand_actions_penalty_scale
         )
 
-        # --- Goal success ---
+        # --- Goal success → goal-only reset (no full env reset) ---
         kp_tolerance = self.cfg.success_tolerance * self.cfg.keypoint_scale
         near_goal = keypoints_max_dist <= kp_tolerance
         self.near_goal_steps = (self.near_goal_steps + near_goal.int()) * near_goal.int()
-        self.goal_reached = self.near_goal_steps >= self.cfg.success_steps
+        goal_reached = self.near_goal_steps >= self.cfg.success_steps
         bonus_rew = near_goal.float() * (self.cfg.reach_goal_bonus / self.cfg.success_steps)
+
+        if goal_reached.any():
+            reached_ids = goal_reached.nonzero(as_tuple=False).squeeze(-1)
+            self.successes[reached_ids] += 1.0
+            self._resample_goal(reached_ids)
+            self.near_goal_steps[reached_ids] = 0
+            self.closest_keypoint_max_dist[reached_ids] = -1.0
 
         # --- Total ---
         reward = (
@@ -428,7 +439,8 @@ class SimToolRealEnv(DirectRLEnv):
         fallen = self.object_pos[:, 2] < 0.1
         palm_obj_dist = torch.norm(self.palm_center - self.object_pos, dim=-1)
         too_far = palm_obj_dist > 1.5
-        terminated = fallen | too_far | self.goal_reached
+        max_successes = self.successes >= self.max_consecutive_successes
+        terminated = fallen | too_far | max_successes
 
         time_out = self.episode_length_buf >= self.max_episode_length
         return terminated, time_out

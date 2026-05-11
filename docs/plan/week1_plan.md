@@ -161,8 +161,12 @@ model = get_peft_model(model, LoraConfig(r=16, lora_alpha=32, target_modules="al
 | 양자화 | 4-bit NF4, double quant, bf16 compute |
 | LoRA | r=16, alpha=32, backbone Linear4bit only (216 layers) |
 | Trainable params | 17M / 2.56B (0.7%) |
-| VRAM (load → train) | 5.36GB → 5.83GB |
+| VRAM (load → train) | 5.36GB → 5.83GB (bs=1) |
+| VRAM 추정 (bs별) | bs=2 ~7.4GB, bs=4 ~10.6GB, bs=8 ~17GB (OOM) |
+| 16GB 한계 batch size | bs=4~6 (activation ~1.6GB/sample, 나머지 고정) |
+| effective batch 확장 | bs=4 + grad_accum=8 → effective 32 가능 |
 | Loss (1 step) | 0.5014 |
+| Full fine-tuning (비교) | 15.4GB → OOM (A100 필요) |
 | 스크립트 | `scripts/groot/qlora_1step_test.py` |
 
 **주요 이슈 및 해결:**

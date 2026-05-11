@@ -76,10 +76,10 @@ DEFAULT_JOINT_POS_BFS: dict[str, float] = {
 # Fingertip / palm body names
 # ---------------------------------------------------------------------------
 FINGERTIP_BODY_NAMES: list[str] = [
-    "left_thumb_DP",
     "left_index_DP",
     "left_middle_DP",
     "left_ring_DP",
+    "left_thumb_DP",
     "left_pinky_DP",
 ]
 PALM_BODY_NAME: str = "iiwa14_link_7"
@@ -102,9 +102,9 @@ FINGERTIP_OFFSETS: list[tuple[float, float, float]] = [
 # ---------------------------------------------------------------------------
 KEYPOINT_OFFSETS: list[tuple[float, float, float]] = [
     (+1.0, +1.0, +1.0),
-    (+1.0, -1.0, -1.0),
-    (-1.0, +1.0, -1.0),
+    (+1.0, +1.0, -1.0),
     (-1.0, -1.0, +1.0),
+    (-1.0, -1.0, -1.0),
 ]
 
 
@@ -249,7 +249,7 @@ class SimToolRealEnvCfg(DirectRLEnvCfg):
     )
     table_pos: tuple[float, float, float] = (0.0, 0.0, 0.38)
 
-    # --- Object (Phase 1: single fixed tool) ---
+    # --- Object ---
     object_cfg: RigidObjectCfg = RigidObjectCfg(
         prim_path="/World/envs/env_.*/Object",
         spawn=sim_utils.UsdFileCfg(
@@ -260,9 +260,11 @@ class SimToolRealEnvCfg(DirectRLEnvCfg):
             mass_props=sim_utils.MassPropertiesCfg(density=1000.0),
         ),
         init_state=RigidObjectCfg.InitialStateCfg(
-            pos=(0.0, 0.0, 0.63),  # tableResetZ + tableObjectZOffset = 0.38 + 0.25
+            pos=(0.0, 0.0, 0.63),
         ),
     )
+    # Object scale: (1,1,1) for fixed mesh objects; override for procedural tools
+    object_scale_override: tuple[float, float, float] = (1.0, 1.0, 1.0)
 
     # --- Control ---
     dof_speed_scale: float = 1.5

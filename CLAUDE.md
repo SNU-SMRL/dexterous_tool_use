@@ -92,6 +92,7 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 - Do not guess parameter names or import paths from memory or training data.
 - If a parameter causes a TypeError or AttributeError, check the source — do not try random alternatives.
 - When debugging a runtime error, check if the architectural approach is wrong before investigating the error message literally.
+- When a dimension mismatch or unexpected value appears, ALWAYS investigate before dismissing. "The framework handles it" is not an acceptable answer without verification.
 
 ---
 
