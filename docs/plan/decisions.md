@@ -5,6 +5,101 @@ HTML 프로젝트 페이지 업데이트 시 이 문서를 참고하여 반영.
 
 ---
 
+## 2026-05-11: 프로젝트 방향 전면 전환 — GR00T post-training → UniDex-VLA + Adaptive Impedance Control
+
+**결정:** "SimToolReal rollout → GR00T N1.7 post-training → language-conditioned tool use" 방향을 폐기하고, "UniDex-VLA (frozen) + Adaptive Impedance Control MLP adapter" 방향으로 전면 전환.
+
+**배경:**
+
+1. UniDex-VLA (Tsinghua, CVPR 2026, arXiv 2603.22264) 발견. 50K+ trajectories, 8종 dexterous hand, FAAS 통합 action space, 3D VLA + flow matching으로 language-conditioned dexterous tool use 81% task progress 달성. 코드/모델/데이터 전부 공개. → 기존 "SimToolReal rollout → GR00T post-training" 계획의 핵심 가치가 소멸.
+
+2. UniDex-VLA 태스크 분석 결과, 전부 gentle 태스크 (커피 붓기, 쓸기, 스프레이, 가위, 마우스). Contact-rich interaction (충격, 지속 토크, 저항) 없음. Position-only 제어의 근본적 한계: 자유 공간 → 접촉 → 충격이라는 phase transition을 다룰 수 없음.
+
+3. Force-aware VLA 계열 (ForceVLA, FD-VLA, FAVLA) 조사 — 전부 gripper only. VLM-guided impedance (CompliantVLA-adaptor, OmniVIC, HumanoidVLM) 조사 — 전부 arm only. **Dexterous hand + force-aware + language의 교차점이 비어 있음.**
+
+4. 최종 구조: UniDex-VLA (frozen, position target 생성) + Impedance Adapter MLP (z, a_future, F_contact → adaptive K, D) + Admittance controller (per-joint impedance).
+
+**근거:**
+- Gap이 진짜 비어있음: landscape matrix에서 3가지 속성을 동시에 갖는 연구 없음
+- GNC 전공 시너지 극대화: impedance/admittance control, gain scheduling이 핵심
+- 리스크가 낮은 구조: VLA frozen, 경량 MLP adapter만 학습
+- UniDex-VLA 코드 분석 완료: LEAP Hand 16-DoF 공식 지원, internal feature (KV caches) + action chunk (30×82) 추출 가능
+
+**폐기된 것:**
+- GR00T N1.7 post-training 전체 계획
+- SimToolReal rollout 기반 데이터 생성
+- URDF→USD 변환 결과 (Sharpa Hand + KUKA iiwa 43 USD) — LEAP Hand + Franka로 교체
+- Gate 1-6 (Week 1 plan) 전체 — 새 Gate 0-3으로 교체
+
+**유지되는 것:**
+- Isaac Lab 설치/경험, SM_120/NVRTC 이슈 지식
+- API 검증 습관 (CLAUDE.md 규칙)
+
+**핵심 레퍼런스:**
+- UniDex-VLA: [arXiv 2603.22264](https://arxiv.org/abs/2603.22264), [GitHub](https://github.com/unidex-ai/UniDex)
+- CompliantVLA-adaptor: [arXiv 2601.15541](https://arxiv.org/abs/2601.15541)
+- ForceVLA: [arXiv 2505.22159](https://arxiv.org/abs/2505.22159)
+- Grasp-to-Act: [arXiv 2602.20466](https://arxiv.org/abs/2602.20466)
+
+---
+
+## 2026-05-11: Isaac Sim multi-venv 전략 채택 — 5.1 + 6.0 병렬 셋업
+
+**결정:** Isaac Sim 4.5 (현재)를 유지하면서, 5.1과 6.0 venv를 병렬로 셋업하여 Gate 5 blocker를 해결한다.
+
+**배경:** RTX 5080 (Blackwell SM_120)에서 Isaac Sim 4.5의 NVRTC 컴파일러가 SM_120을 지원하지 않아 2개 blocker 발생:
+1. Procedural tool USD를 `RigidObject`로 로드 시 PhysX NVRTC 에러 (`PhysicsArticulationRootAPI` 존재하는 USD)
+2. Livestream (`--livestream 1`) 시 렌더링 파이프라인 NVRTC 에러
+
+**조사 결과:**
+
+| | Isaac Sim 4.5 | 5.1 (GA) | 6.0 (베타) |
+|---|---|---|---|
+| PhysX SM_120 | X | O (커널 포함) | O |
+| 렌더링 SM_120 | X | X (crash 보고) | O (벤치마크 포함) |
+| Python | 3.10 | 3.11 | 3.12 |
+| Isaac Lab | main (0.54.3) | v2.3.x | v3.0-beta |
+| 상태 | GA | GA | Early Developer Release |
+
+**의존성 영향 확인:**
+- **GR00T N1.7**: Isaac Sim과 완전 독립 (PyTorch + HuggingFace). 업그레이드 무관.
+- **SimToolReal**: 원본은 IsaacGym Preview 4 (Python 3.8). Isaac Lab 포트 없음, SAPG 미포팅. 우리 코드는 이미 Gate 4에서 Isaac Lab DirectRLEnv로 이식 완료. Policy eval은 rl_games inference만 사용.
+- **URDF→USD**: Gate 2 변환 결과물 (43 USD)은 Isaac Sim 버전 무관.
+- **Isaac Lab 3.0-beta (6.0용)**: API 대변동 (multi-backend, kit-less). Gate 4 env 코드 재수정 필요.
+
+**근거:**
+- Blocker 1은 5.1에서 해결 가능 (PhysX SM_120 커널), Blocker 2는 6.0 필요 (렌더링)
+- 단일 버전으로는 양쪽 blocker를 동시에 해결 불가
+- articulation root 수동 제거로 Blocker 1 우회 시도는 비현실적 — multi-link tool의 joint 구조가 깨짐
+- venv 재구성 비용은 낮음 (`uv venv --python 3.11` + 패키지 재설치)
+- 6.0은 베타이므로 메인 작업 환경으로 부적합, 검증용으로만 사용
+
+**채택한 전략:**
+
+```
+.venv      (Python 3.10, Isaac Sim 4.5)  ← 메인: Blocker 3 디버깅, headless eval
+.venv-5.1  (Python 3.11, Isaac Sim 5.1)  ← Blocker 1: procedural tool RigidObject 로드
+.venv-6.0  (Python 3.12, Isaac Sim 6.0)  ← Blocker 2: livestream/GUI 시각화
+```
+
+**대안 검토:**
+
+| 항목 | 채택한 방법 | 대안 | 판단 |
+|---|---|---|---|
+| Blocker 1 해결 | Isaac Sim 5.1 venv | USD에서 articulation root 제거 | 5.1이 맞음 — root 제거는 tool joint 구조를 깨뜨림 |
+| Blocker 2 해결 | Isaac Sim 6.0 venv | headless + 영상 녹화로 대체 | 6.0 시도 후, 안 되면 영상 녹화 fallback |
+| 메인 환경 | 4.5 유지 | 5.1로 전환 | 4.5 유지가 안전 — headless eval은 동작하고, 5.1 전환은 Isaac Lab 버전 변경 수반 |
+| 6.0 접근 | 베타 검증용 | GA 대기 | GA 시기 미정이므로 베타라도 먼저 확인 |
+
+**참고 소스:**
+- [Isaac Sim 5.1 Requirements (RTX 5080 listed)](https://docs.isaacsim.omniverse.nvidia.com/5.1.0/installation/requirements.html)
+- [Isaac Sim 6.0 Benchmarks (RTX 5080 included)](https://docs.isaacsim.omniverse.nvidia.com/6.0.0/reference_material/benchmarks.html)
+- [Isaac Lab Releases](https://github.com/isaac-sim/IsaacLab/releases)
+- [RTX 5080 NVRTC Error Forum](https://forums.developer.nvidia.com/t/rtx-5080-on-ubuntu-22-04-nvrtc-error-incorrect-capability-12-0-in-isaac-lab/331905)
+- [Isaac Sim 5.1 GUI Crash on Blackwell](https://forums.developer.nvidia.com/t/isaac-sim-5-1-crashes-on-startup-with-rtx-5060-ti-blackwell-sm-120-rtx-scenedb-plugin-crash/366252)
+
+---
+
 ## 2026-05-11: Gate 6 + Gate 3 완료 — GR00T N1.7 inference 및 QLoRA 검증
 
 **결정:** GR00T N1.7-3B inference (Gate 5)와 QLoRA 1-step training (Gate 2.5) 모두 RTX 5080 16GB에서 통과.
