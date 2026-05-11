@@ -1,0 +1,292 @@
+# Week 1: SimToolReal → Isaac Lab Migration + GR00T 검증
+
+## 주의사항
+
+**IsaacGym Preview 4는 RTX 5080(SM_120)에서 동작 불가.**
+- `libPhysXGpu_64.so`에 SM_80까지만 커널 포함, deprecated, 업데이트 없음
+- Isaac Lab으로 이식하여 Python 3.10 단일 환경으로 통일
+
+---
+
+## Gate 1: Isaac Lab 설치 + 기본 동작 확인
+
+**목표:** Isaac Lab 설치, RTX 5080에서 dexterous hand 예제 환경 실행 확인
+
+### 1-1. 환경 셋업
+
+```bash
+# uv 설치 (없으면)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Python 3.10 가상환경 생성 (SimToolReal + GR00T 통합)
+uv venv --python 3.10 .venv
+source .venv/bin/activate
+
+# Isaac Lab 설치
+# https://isaac-sim.github.io/IsaacLab/main/source/setup/installation.html
+# Isaac Sim 5.1 + Isaac Lab v2.3 기준
+```
+
+### 1-2. Dexterous Hand 예제 실행
+
+```bash
+# Shadow Hand 환경 테스트
+python -m isaaclab.scripts.run_env --task Isaac-Shadow-Hand-Over-Direct-v0 --num_envs 16
+```
+
+### 통과 기준
+- [ ] Isaac Lab이 RTX 5080에서 정상 실행됨
+- [ ] Shadow Hand가 렌더링되고 관절이 움직임
+- [ ] VRAM 사용량 기록
+
+### 실패 시
+- Isaac Sim/Lab 설치 실패 → CUDA 12.x 호환 확인, pip vs conda 경로 전환
+- RTX 5080 드라이버 문제 → NVIDIA 드라이버 업데이트
+
+---
+
+## Gate 2: SimToolReal 에셋 변환 (URDF → USD)
+
+**목표:** Sharpa Hand + KUKA iiwa + tool 에셋을 USD로 변환, Isaac Lab에서 로드 확인
+
+### 2-1. SimToolReal 클론 + 에셋 파악
+
+```bash
+git clone https://github.com/tylerlum/simtoolreal.git
+# 에셋 위치 확인
+ls simtoolreal/assets/urdf/dextoolbench/
+```
+
+### 2-2. URDF → USD 변환
+
+```python
+from isaaclab.sim.converters import UrdfConverterCfg, UrdfConverter
+
+cfg = UrdfConverterCfg(
+    asset_path="simtoolreal/assets/urdf/dextoolbench/sharpa_hand.urdf",
+    usd_dir="assets/usd/",
+    # fix_base, merge_fixed_joints 등 옵션 확인 필요
+)
+converter = UrdfConverter(cfg)
+```
+
+### 2-3. 변환 검증
+
+변환 후 반드시 확인:
+- [ ] Joint 개수가 원본과 동일 (Sharpa Hand: 22-DoF)
+- [ ] Joint limit 값이 원본 URDF와 일치
+- [ ] Collision mesh가 정상 (시각적으로 확인)
+- [ ] Link hierarchy가 보존됨
+
+### 주의: Joint 순서 변경
+
+Isaac Lab은 breadth-first, IsaacGym은 depth-first 조인트 순서를 사용.
+변환 후 `Articulation.data.joint_names`로 순서를 확인하고, 기존 코드의 인덱싱을 매핑해야 함.
+
+### 실패 시
+- URDF 파싱 에러 → URDF 파일 수동 수정 (mesh 경로 등)
+- Collision mesh 깨짐 → Isaac Lab의 collision approximation 옵션 조정
+
+---
+
+## Gate 3: SimToolReal 환경 이식
+
+**목표:** SimToolReal의 IsaacGymEnvs 환경을 Isaac Lab `DirectRLEnv`로 변환
+
+### 3-1. 환경 구조 변환
+
+Isaac Lab 환경 구조:
+```
+scripts/simtoolreal_isaaclab/
+├── agents/
+│   ├── __init__.py
+│   └── rl_games_ppo_cfg.yaml
+├── __init__.py
+└── simtoolreal_env.py
+```
+
+### 3-2. 주요 변환 항목
+
+참고: `docs/isaac/migrating_from_isaacgymenv.rst`
+
+| IsaacGymEnvs | Isaac Lab |
+|---|---|
+| `VecTask` 상속 | `DirectRLEnv` 상속 |
+| `create_sim()` | `_setup_scene()` |
+| `gym.acquire_*_tensor()` + `wrap` + `refresh` | `robot.data.joint_pos` 직접 접근 |
+| `pre_physics_step()` | `_pre_physics_step()` + `_apply_action()` |
+| `compute_observations()` | `_get_observations()` → `{"policy": obs}` |
+| `compute_reward()` | `_get_rewards()` → reward tensor 반환 |
+| 수동 `reset_buf` + `progress_buf` | `_get_dones()` → `(resets, time_out)` |
+| YAML config | `@configclass` Python |
+| 쿼터니언 xyzw | **wxyz** |
+| 조인트 depth-first | **breadth-first** |
+
+### 3-3. 쿼터니언 변환 체크리스트
+
+SimToolReal 코드에서 orientation을 다루는 모든 위치를 찾아 xyzw → wxyz 변환:
+- [ ] Goal pose 정의
+- [ ] Reward 계산 (orientation error)
+- [ ] Reset 시 initial pose 설정
+- [ ] Observation buffer 구성
+
+### 3-4. PhysX 기본값 차이 확인
+
+참고: `docs/isaac/comparing_simulation_isaacgym.rst`
+
+| 파라미터 | IsaacGym 기본값 | Isaac Sim 기본값 |
+|---|---|---|
+| Angular Damping | 0.0 | 0.05 |
+| Max Linear Velocity | 1000 | inf |
+| Max Angular Velocity | 64.0 (rad/s) | 5729.58 (deg/s) |
+| Max Contact Impulse | 1e32 | inf |
+
+시뮬레이션 동작이 원본과 달라지면 이 기본값 차이를 먼저 의심.
+
+### 통과 기준
+- [ ] Isaac Lab에서 Sharpa Hand + KUKA iiwa + tool이 로드됨
+- [ ] 환경 reset이 정상 동작
+- [ ] Observation/reward 계산이 에러 없이 실행됨
+- [ ] 랜덤 액션으로 step이 정상 진행됨
+
+### 실패 시
+- 조인트 인덱싱 오류 → `joint_names` 출력 후 매핑 테이블 작성
+- 시뮬레이션 불안정 → PhysX 기본값을 IsaacGym 값으로 명시적 설정
+- 시간 초과 → 핵심 1개 태스크만 먼저 이식, 나머지는 추후
+
+---
+
+## Gate 4: Pretrained Policy 로드 + Rollout
+
+**목표:** SimToolReal pretrained policy를 Isaac Lab 환경에서 로드하여 rollout 확인
+
+### 4-1. Policy 로드
+
+```bash
+cd simtoolreal
+python download_pretrained_policy.py
+```
+
+rl_games checkpoint(.pth)를 Isaac Lab의 rl_games play 스크립트로 실행:
+
+```bash
+python scripts/reinforcement_learning/rl_games/play.py \
+    --task=SimToolReal-Direct-v0 \
+    --num_envs=6 \
+    --checkpoint=simtoolreal/pretrained_policy/model.pth
+```
+
+### 통과 기준
+- [ ] Pretrained policy가 로드됨 (weight shape 호환)
+- [ ] 6개 tool category 중 최소 1개에서 tool 조작 성공
+- [ ] 성능이 원본과 유사 (정성적 비교)
+
+### 실패 시
+- Weight shape 불일치 → 조인트 순서 매핑 문제일 가능성 높음. 인덱스 리매핑 적용
+- 성능 저하 → PhysX 파라미터 차이 조정, 쿼터니언 컨벤션 재확인
+- 완전 실패 → Isaac Lab 환경에서 재학습 필요 (Week 2로 이월)
+
+---
+
+## Gate 5: GR00T N1.7 Inference 확인
+
+**목표:** 동일 Python 3.10 환경에서 GR00T N1.7 inference 확인
+
+Gate 1~4와 병렬 진행 가능.
+
+### 5-1. GR00T 설치
+
+```bash
+# 동일 .venv 또는 별도 .venv-groot
+git clone --recurse-submodules https://github.com/NVIDIA/Isaac-GR00T.git
+cd Isaac-GR00T
+uv sync --python 3.10
+
+# FFmpeg
+sudo apt-get install -y ffmpeg
+```
+
+### 5-2. Inference 테스트
+
+```bash
+uv run python scripts/deployment/standalone_inference_script.py \
+    --model-path nvidia/GR00T-N1.7-3B \
+    --dataset-path demo_data/droid_sample \
+    --embodiment-tag OXE_DROID_RELATIVE_EEF_RELATIVE_JOINT \
+    --traj-ids 1 2 \
+    --inference-mode pytorch \
+    --action-horizon 8
+```
+
+### 통과 기준
+- [ ] Inference 스크립트가 action 벡터 출력
+- [ ] VRAM 사용량 확인 (16GB 이내)
+- [ ] 모델 클래스 확인: HF transformers 호환 여부 기록
+
+### 실패 시
+- N1.7 접근 불가 → N1.5로 전환
+- CUDA 버전 불일치 → CUDA 12.8 설치
+
+---
+
+## 실행 순서
+
+```
+Day 1: 환경 셋업
+├── Isaac Lab 설치 (Gate 1)
+├── SimToolReal 클론 + 에셋 파악
+└── GR00T 클론 (Gate 5 병렬 시작)
+
+Day 2: 에셋 변환 (Gate 2)
+├── URDF → USD 변환
+├── 변환 검증 (joint 개수, limit, collision)
+└── Joint 순서 매핑 테이블 작성
+
+Day 3-4: 환경 이식 (Gate 3)
+├── DirectRLEnv 구조로 환경 코드 변환
+├── 쿼터니언 xyzw → wxyz 변환
+├── PhysX 기본값 조정
+└── 랜덤 액션으로 step 테스트
+
+Day 5: Policy 로드 + 검증 (Gate 4)
+├── Pretrained policy rollout
+├── 성능 비교 (정성적)
+└── GR00T inference 확인 (Gate 5)
+
+Day 5: 판단
+├── Migration 성공 여부 정리
+├── 재학습 필요 여부 판단
+└── Week 2 계획 수립
+```
+
+---
+
+## Week 1 종료 시 판단 기준
+
+| 결과 | 다음 행동 |
+|---|---|
+| Gate 1~5 모두 통과 | Week 2: 데이터 수집 파이프라인 + GR00T fine-tuning |
+| Gate 1~3 통과, Gate 4 실패 (성능 저하) | Isaac Lab에서 재학습 (rl_games PPO). 원본 대비 성능 비교 |
+| Gate 3 실패 (이식 난항) | 핵심 1개 태스크에 집중, 나머지 태스크 이식은 추후 |
+| Gate 2 실패 (에셋 변환) | Sharpa Hand USD를 수동 제작 or 커뮤니티 에셋 탐색 |
+| Gate 5 실패 (GR00T) | N1.5로 전환, 프로젝트 핵심은 유지됨 |
+
+---
+
+## 부수 작업 (게이트와 병행)
+
+- [ ] SimToolReal 코드 읽기: goal pose 시퀀스 정의 방식 파악 (`dextoolbench/`)
+- [ ] GR00T custom embodiment 문서: `getting_started/finetune_new_embodiment.md`
+- [ ] GR00T modality config 구조: `examples/SO100/so100_config.py` 분석
+- [ ] RunPod 예산 산정 (GR00T fine-tuning용, 시뮬레이션은 로컬)
+
+---
+
+## 리스크 로그
+
+| 리스크 | 영향 | 완화 |
+|---|---|---|
+| DexPBT/SAPG가 Isaac Lab rl_games에서 미호환 | Gate 4 실패 | 표준 PPO로 먼저 시도, SAPG는 추후 |
+| Sharpa Hand URDF→USD 변환 시 collision mesh 깨짐 | Gate 2 실패 | Isaac Lab UrdfConverter 옵션 조정, 수동 검증 |
+| 조인트 순서 depth→breadth 매핑 오류 | Gate 3-4 전반 | joint_names 기반 명시적 매핑, 하드코딩 인덱스 제거 |
+| PhysX 기본값 차이로 시뮬레이션 동작 불일치 | Gate 4 성능 저하 | IsaacGym 값으로 명시적 override |

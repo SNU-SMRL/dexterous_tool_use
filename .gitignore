@@ -237,6 +237,11 @@ pretrained_policy/
 # Except .gitkeep files
 !**/.gitkeep
 
+# External repos (cloned for reproduction)
+simtoolreal/
+Isaac-GR00T/
+IsaacLab/
+
 # IsaacGym (installed externally)
 isaacgym/
 
