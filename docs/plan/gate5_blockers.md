@@ -55,5 +55,7 @@
 
 1. Procedural URDF → USD 변환 시 `--merge-joints` 없이 시도 (articulation root 제거)
 2. 성공하면 procedural tool로 eval 재시도
-3. Isaac Sim 5.0 업그레이드 검토 (livestream 해결)
+3. Isaac Sim 5.0 업그레이드 검토 (livestream + NVRTC 해결)
+   - GR00T N1.7은 Isaac Sim 무관 (독립 패키지) → 업그레이드 영향 없음
+   - Isaac Lab v2.3과 Isaac Sim 5.0 호환성 확인 필요
 4. Medium 미적용 항목 적용
