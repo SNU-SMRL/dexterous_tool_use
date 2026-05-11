@@ -35,7 +35,7 @@ python -m isaaclab.scripts.run_env --task Isaac-Shadow-Hand-Over-Direct-v0 --num
 ```
 
 ### 통과 기준
-- [ ] Isaac Lab이 RTX 5080에서 정상 실행됨
+- [x] Isaac Lab이 RTX 5080에서 정상 실행됨 (Isaac Sim 4.5 + Isaac Lab v2.3)
 - [ ] Shadow Hand가 렌더링되고 관절이 움직임
 - [ ] VRAM 사용량 기록
 
@@ -59,33 +59,60 @@ ls simtoolreal/assets/urdf/dextoolbench/
 
 ### 2-2. URDF → USD 변환
 
-```python
-from isaaclab.sim.converters import UrdfConverterCfg, UrdfConverter
-
-cfg = UrdfConverterCfg(
-    asset_path="simtoolreal/assets/urdf/dextoolbench/sharpa_hand.urdf",
-    usd_dir="assets/usd/",
-    # fix_base, merge_fixed_joints 등 옵션 확인 필요
-)
-converter = UrdfConverter(cfg)
+```bash
+# 실제 사용한 변환 스크립트: scripts/convert_urdf_to_usd.sh
+# Isaac Lab의 convert_urdf.py CLI 사용 (UrdfConverter Python API 대신)
+bash scripts/convert_urdf_to_usd.sh
 ```
+
+변환 옵션:
+- Robot: `--fix-base` (kinematic chain 보존 위해 `--merge-joints` 미사용)
+- Tools/Tables/Environments: `--fix-base --merge-joints` (정적 오브젝트 단순화)
 
 ### 2-3. 변환 검증
 
 변환 후 반드시 확인:
-- [ ] Joint 개수가 원본과 동일 (Sharpa Hand: 22-DoF)
-- [ ] Joint limit 값이 원본 URDF와 일치
-- [ ] Collision mesh가 정상 (시각적으로 확인)
-- [ ] Link hierarchy가 보존됨
+- [x] Joint 개수가 원본과 동일 (KUKA 7 + Sharpa 22 = 29 revolute)
+- [x] Joint limit 값이 원본 URDF와 일치 (USD deg ↔ URDF rad 변환 확인, 29/29 match)
+- [x] Collision mesh가 정상 — USD prim 구조 검증 완료
+- [x] Link hierarchy가 보존됨
+
+**변환 결과 (2026-05-11):**
+
+| Category | Count | Status |
+|---|---|---|
+| Robot (KUKA + Sharpa) | 1 | Converted |
+| Tools (6 categories × 2) | 12 | Converted |
+| Tables | 6 | 6 converted (bowl_plate 재변환 완료) |
+| Environments | 24 | All converted |
+| **Total** | **43** | **43 USD** |
+
+**이슈 및 해결:**
+- `table_narrow_bowl_plate.urdf`가 YCB 메시(`024_bowl`, `029_plate`)를 참조하나, SimToolReal 레포에 포함되지 않음
+- YCB S3에서 메시 다운로드 + CoACD로 collision decomposition 생성 후 재변환 성공
+- `scripts/convert_urdf_to_usd.sh`에 `set -e` 누락 → `set -euo pipefail`로 수정
 
 ### 주의: Joint 순서 변경
 
 Isaac Lab은 breadth-first, IsaacGym은 depth-first 조인트 순서를 사용.
 변환 후 `Articulation.data.joint_names`로 순서를 확인하고, 기존 코드의 인덱싱을 매핑해야 함.
 
+**검증 완료 (2026-05-11):** `scripts/joint_remapping.py`의 매핑 테이블이 URDF kinematic tree의 BFS/DFS 순회와 정확히 일치함을 확인:
+- `JOINT_NAMES_ISAACGYM` = URDF DFS 순서 (PASS)
+- `JOINT_NAMES_ISAACLAB` = URDF BFS 순서 (PASS)
+- Round-trip 매핑 identity (PASS)
+- **TODO:** Gate 3에서 실제 `Articulation.data.joint_names`와 실증 대조 필요
+
 ### 실패 시
 - URDF 파싱 에러 → URDF 파일 수동 수정 (mesh 경로 등)
 - Collision mesh 깨짐 → Isaac Lab의 collision approximation 옵션 조정
+- ~~YCB 메시 누락 → YCB S3에서 다운로드 + CoACD decomposition 생성~~ (해결됨)
+
+### 적용된 수정사항
+- `isaacsim.asset.importer.urdf`를 Kit config dependencies에 추가
+- `set_merge_fixed_ignore_inertia` API mismatch 패치 (Isaac Sim 4.5 vs Isaac Lab v2.3)
+- 변환 스크립트 glob 패턴 수정
+- `set -euo pipefail` 적용
 
 ---
 

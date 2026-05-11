@@ -72,11 +72,13 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 - Scripts must be runnable standalone (`if __name__ == "__main__":`).
 - Paths: use `pathlib.Path`, not string concatenation.
 - No silent failures. Raise exceptions instead of returning defaults or falling back quietly. If something fails, it must be loud.
+- Virtual env: always `source .venv/bin/activate` before running Python.
+- Package manager: use `uv` (`uv pip install`, `uv add`, etc.). Do not use bare `pip`.
 
 ## 6. Decision Log
 
-- Read `docs/decisions.md` at session start to understand prior decisions before working.
-- When a technical decision is made during the session (adoption, rejection, pivot), append it to `docs/decisions.md` at the end of the session.
+- Read `docs/plan/decisions.md` at session start to understand prior decisions before working.
+- When a technical decision is made during the session (adoption, rejection, pivot), append it to `docs/plan/decisions.md` at the end of the session.
 - Format: date, decision title, background, rationale. Newest entries first.
 
 ---

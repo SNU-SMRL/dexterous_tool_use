@@ -5,6 +5,26 @@ HTML 프로젝트 페이지 업데이트 시 이 문서를 참고하여 반영.
 
 ---
 
+## 2026-05-11: Gate 2 USD 변환 완료 — YCB 메시 누락 해결
+
+**결정:** YCB 오브젝트(`024_bowl`, `029_plate`)를 직접 다운로드 + CoACD decomposition 생성하여 `table_narrow_bowl_plate` 변환 완료. 43 URDF → 43 USD 1:1 변환 확인.
+
+**배경:** SimToolReal 레포에 `table_narrow_bowl_plate.urdf`가 YCB 메시를 상대경로(`ycb/024_bowl/textured.obj` 등)로 참조하나, 메시 파일이 레포에 포함되지 않음 (라이선스 파일만 존재). 변환 시 "Used null prim" 에러 발생.
+
+**근거:**
+- `table_narrow_bowl_plate`은 spatula 태스크(`serve_plate`, `flip_over`)의 필수 테이블
+- YCB S3(`ycb-benchmarks.s3-website-us-east-1.amazonaws.com`)에서 tgz 아카이브 다운로드 가능 확인
+- CoACD(`pip install coacd`)로 `max_convex_hull=10` decomposition 생성 → URDF 참조와 일치
+- 변환 후 USD prim 구조 검증: visual mesh(bowl 8194 verts, plate 8002 verts) + collision decomp 20개 정상 포함
+- `scripts/convert_urdf_to_usd.sh`에 `set -e` 누락 → `set -euo pipefail`로 수정
+
+**부수 검증:**
+- `scripts/joint_remapping.py`: URDF BFS/DFS 순회와 정확히 일치 확인 (29/29 joints)
+- Robot USD: 29 revolute joints, joint limit 29/29 match (rad→deg)
+- `scripts/verify_usd_conversion.py`는 URDF 측만 검증 — 파일명 변경 또는 USD 검증 로직 추가 권장
+
+---
+
 ## 2026-05-11: 외부 dexterous hand 데이터셋 합치기 폐기 → SimToolReal 단독 사용
 
 **결정:** 외부 dexterous hand/tool-use 데이터셋을 GR00T post-training 데이터에 합치지 않는다. SimToolReal 기존 24 tasks (6 tool categories)의 RL rollout 데이터만 사용.
