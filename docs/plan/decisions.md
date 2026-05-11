@@ -5,6 +5,68 @@ HTML 프로젝트 페이지 업데이트 시 이 문서를 참고하여 반영.
 
 ---
 
+## 2026-05-11: Gate 6 + Gate 3 완료 — GR00T N1.7 inference 및 QLoRA 검증
+
+**결정:** GR00T N1.7-3B inference (Gate 5)와 QLoRA 1-step training (Gate 2.5) 모두 RTX 5080 16GB에서 통과.
+
+**Gate 6 결과:**
+- Inference: peak VRAM 6.6GB, 87.4ms/step, Avg MSE 0.020
+- 모델 구조: `PreTrainedModel` 상속 + `AutoModel.register` → HF transformers 완전 호환
+- Backbone: Cosmos-Reason2-2B (Qwen3-VL), Action head: flow-matching DiT
+
+**Gate 3 결과:**
+- QLoRA 4-bit (NF4 double quant) + LoRA r=16: VRAM 5.36GB→5.83GB (batch_size=1)
+- Trainable: 17M / 2.56B (0.7%), backbone LoRA only
+- Activation memory만 batch_size에 비례 → bs=4~6까지 16GB에서 가능 (추정)
+
+**해결한 이슈 4건:**
+
+1. **HuggingFace gated repo 접근** — `nvidia/Cosmos-Reason2-2B`와 `nvidia/GR00T-N1.7-3B` 모두 gated. `huggingface-cli login`으로 Read 토큰 인증 후 해결.
+
+2. **DeepSpeed import 실패 (`CUDA_HOME` 미설정)** — 이 머신에 CUDA toolkit이 없고 PyTorch가 bundled CUDA를 사용. `accelerate`가 무조건 `deepspeed`를 import 시도. `uv pip uninstall deepspeed`로 해결 (단일 GPU에서 불필요).
+
+3. **`beta_dist.sample()` fp16 미지원** — 4-bit 로딩 시 DiT action_head의 Beta distribution concentration 파라미터가 fp16으로 캐스팅됨. PyTorch의 `_sample_dirichlet` CUDA 커널이 fp16을 지원하지 않아 RuntimeError. → `Beta(c1.float(), c0.float())`로 fp32 재생성.
+
+4. **`lm_head` 양자화 실패 (tied embeddings)** — `tie_word_embeddings=True`인 모델에서 `lm_head`가 `Linear4bit`로 감싸지지만 실제 weight는 embedding과 공유되어 `compress_statistics` 속성 누락. → `llm_int8_skip_modules=["action_head", "lm_head"]`로 양자화 제외.
+
+**접근:** 공식 `finetune.sh --max-steps 1`로 full-precision OOM 확인 → `experiment.py:run()`의 model을 4-bit로 교체 → beta_dist/lm_head 이슈 해결.
+
+**대안 검토:**
+
+| 항목 | 채택한 방법 | 대안 | 판단 |
+|---|---|---|---|
+| QLoRA 접근 | 경로 A (HF `AutoModel` + PEFT) | 경로 B (수동 `inject_adapter_in_model`) | A가 올바름 — 모델이 HF 호환이므로 |
+| LoRA 대상 | backbone Linear4bit만 (0.7%) | action_head도 full train (64%) | backbone만이 맞음 — action_head까지 하면 OOM |
+| compute dtype | bfloat16 | float16 | bf16이 필수 — DiT의 `beta_dist`가 fp16 미지원 |
+| 데이터 로딩 | 공식 pipeline 재사용 | 직접 구성 | 공식 pipeline이 맞음 — 직접 구성은 multi-modal collation이 복잡 |
+
+---
+
+## 2026-05-11: Gate 4 Phase 1-4 완료 — Isaac Lab 환경 이식 (Scene + Reset + Obs + Reward)
+
+**결정:** SimToolReal DirectRLEnv skeleton이 RTX 5080에서 동작 확인. Robot (29 joints) + Table (static) + Object (RigidObject) 로드, reset + random action step 정상.
+
+**해결한 이슈 4건:**
+
+1. **`usd-core` pip 패키지 충돌** — Isaac Sim의 내장 `pxr` 바인딩과 충돌하여 `UsdAPISchemaBase` 에러 발생. 아무 패키지도 의존하지 않는 고아 패키지로 확인, `uv pip uninstall usd-core`로 해결. → **교훈:** 새 패키지 설치 후 기존 환경 smoke test 필수.
+
+2. **Isaac Lab API 오용 4건** — `sim_utils.ImplicitActuatorCfg` (→ `isaaclab.actuators`), `sim_utils.configclass` (→ `isaaclab.utils`), `UsdFileCfg` import 누락, `PhysxCfg(max_depenetration_velocity=...)` (→ `RigidBodyPropertiesCfg` 파라미터). 모두 소스 코드를 확인하지 않고 추정으로 작성한 결과. → **교훈:** CLAUDE.md에 "unfamiliar API는 소스 코드에서 확인" 규칙 추가함.
+
+3. **Table을 RigidObject로 로드 시 NVRTC 에러** — Table USD (URDF에서 `--fix-base`로 변환)에 `PhysicsArticulationRootAPI`가 존재. `RigidObject` + `kinematic_enabled=True` + `articulation_enabled=False` 조합에서 `RigidObjectData` 초기화 중 PyTorch inductor NVRTC 컴파일 실패 (SM_120). → **해법:** 정적 scene 요소는 `RigidObject`가 아니라 `cfg.func()` 직접 스폰 (공식 패턴: `isaaclab_tasks/direct/automate/assembly_env.py`). → **교훈:** NVRTC 에러를 라이브러리 충돌로 오진하여 `LD_LIBRARY_PATH`, `/proc/maps`, 환경변수 등을 조사하느라 시간 소모. 증상이 아니라 아키텍처(정적 body를 RigidObject로 관리) 문제였음. 공식 예제를 먼저 확인했으면 즉시 해결 가능.
+
+4. **Tool USD의 instanced prims에 collision_props 적용 불가** — URDF→USD 변환 시 visuals/collisions가 instanceable로 생성됨. `CollisionPropertiesCfg`는 instanced prim에 적용 불가. USD 자체에 `PhysicsCollisionAPI`가 이미 설정되어 있으므로 spawn cfg에서 `collision_props` 제거로 해결.
+
+**대안 검토:**
+
+| 항목 | 채택한 방법 | 대안 | 판단 |
+|---|---|---|---|
+| Table 스폰 | `cfg.func()` 정적 스폰 | URDF 재변환 (`--fix-base` 제거) | 채택한 방법이 Isaac Lab 공식 패턴이라 올바름 |
+| Task 등록 | `run.py` + `sys.path` | Isaac Lab extension system | 현재는 pragmatic, 추후 extension으로 전환 가능 |
+| 파일 구조 | `env_cfg.py` + `env.py` 2파일 | `rewards.py`, `observations.py` 분리 | 2파일이 맞음 (InHandManipulation 예제 패턴) |
+| Convention | Isaac Lab native (wxyz, BFS) | IsaacGym 호환 (xyzw, DFS) | native가 맞음, policy wrapper에서 변환 |
+
+---
+
 ## 2026-05-11: Gate 2 USD 변환 완료 — YCB 메시 누락 해결
 
 **결정:** YCB 오브젝트(`024_bowl`, `029_plate`)를 직접 다운로드 + CoACD decomposition 생성하여 `table_narrow_bowl_plate` 변환 완료. 43 URDF → 43 USD 1:1 변환 확인.

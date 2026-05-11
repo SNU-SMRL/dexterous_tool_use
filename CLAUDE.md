@@ -83,4 +83,16 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 ---
 
+## 7. Unfamiliar APIs
+
+**When using an API for the first time, or when repeated errors occur with a familiar-seeming API, always verify against the actual source code or official docs before writing code.**
+
+- Before writing ANY config or setup code, find a working example in the same codebase and copy its pattern first. Then adapt.
+- Read the class/function definition in the source. Check parameter names, types, and default values.
+- Do not guess parameter names or import paths from memory or training data.
+- If a parameter causes a TypeError or AttributeError, check the source — do not try random alternatives.
+- When debugging a runtime error, check if the architectural approach is wrong before investigating the error message literally.
+
+---
+
 **These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
